@@ -1,0 +1,4 @@
+*.pro.user
+myCpp/StandardLibrary
+myPython/django
+myPython/__pycache__
