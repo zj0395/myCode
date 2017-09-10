@@ -3,3 +3,4 @@ myCpp/StandardLibrary
 myPython/django
 myPython/__pycache__
 build-*
+*.pyc
