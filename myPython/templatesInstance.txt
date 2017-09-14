@@ -1,0 +1,5 @@
+Dear [name].
+Thank you.
+Your email is [email].
+[timeNow]
+GoodBye.

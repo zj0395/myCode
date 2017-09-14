@@ -1,0 +1,4 @@
+import time
+name    = "Zhang San"
+email   = "good@qq.com"
+timeNow = time.asctime()
