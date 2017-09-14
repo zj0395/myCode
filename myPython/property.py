@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # coding=utf-8
-class Student(object):
+class Student:
     __slots__=('name','age','__score')
     def __len__(self):
         return 5

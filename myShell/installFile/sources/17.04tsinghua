@@ -1,0 +1,10 @@
+deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ zesty main restricted
+deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ zesty-updates main restricted
+deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ zesty universe
+deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ zesty-updates universe
+deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ zesty multiverse
+deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ zesty-updates multiverse
+deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ zesty-backports main restricted universe multiverse
+deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ zesty-security main restricted
+deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ zesty-security universe
+deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ zesty-security multiverse
