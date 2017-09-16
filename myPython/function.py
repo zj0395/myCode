@@ -8,7 +8,7 @@ from configparser import ConfigParser
 
 def tidyTest():
     '''用来规范HTML代码'''
-    text = open("function-messy.html", 'rb').read()
+    text = open("testFile/function-messy.html", 'rb').read()
     tidy = Popen('tidy', stdin=PIPE, stdout=PIPE, stderr=PIPE)
     
     tidy.stdin.write(text)
@@ -35,7 +35,7 @@ def BeautifulSoupTest():
     print( '\n'.join( sorted( jobs, key = lambda x: x.lower() ) ) )
 
 def ConfigParserTest():
-    CONFIGFILE = 'function-test.ini'
+    CONFIGFILE = 'testFile/function-test.ini'
     config = ConfigParser()
     #读取配置文件
     config.read(CONFIGFILE)

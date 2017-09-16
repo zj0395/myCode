@@ -2,7 +2,7 @@
 # coding=utf-8
 
 '''
-同目录下的 templatesDefine.txt 和 templatesInstance.txt 为测试文件
+testFile 目录下的 templatesDefine.txt 和 templatesInstance.txt 为测试文件
 将这个文件作为参数调用本脚本，即可看到结果
 该脚本至少需要两个文件作为参数，最后一个为实例文件，其它文件均视为定义文件
 '''
