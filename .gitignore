@@ -1,6 +1,6 @@
 *.pro.user
 myCpp/StandardLibrary
 myPython/django
-myPython/__pycache__
 build-*
 *.pyc
+__pycache__
