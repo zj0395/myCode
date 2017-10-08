@@ -9,6 +9,7 @@
 
 #pragma execution_character_set("utf-8")
 
+//#define DEFAULT_IP  "127.0.0.1"
 #define DEFAULT_IP  "101.200.144.41"
 
 
@@ -28,11 +29,29 @@ StartWidget::StartWidget(QWidget *parent) :
 
     connect( socket, &QTcpSocket::readyRead, this, &StartWidget::recvMessage );
 
-    connect(  socket, &QTcpSocket::connected, this, &StartWidget::connectedToServer);
+    connect( socket, &QTcpSocket::connected, this, &StartWidget::connectedToServerSuccess);
 
     connect( timer, &QTimer::timeout, this, &StartWidget::timeOut);
 
-    connect( &chatWidget, &ChatWidget::sendMsg, this, &StartWidget::sendMessage );
+    //发送消息
+    connect( &chatWidget, &ChatWidget::sendMsg,
+             [=](QString fromUser, QString msg)
+    {
+        this->sendMessage( M_Message, fromUser + '\n' + msg );
+    });
+    //更新用户列表
+    connect( &chatWidget, &ChatWidget::sendUpdateUserMsg,
+             [=]()
+    {
+        this->sendMessage( M_UpdateUserList, "" );
+    });
+    //退出
+    connect( &chatWidget, &ChatWidget::sendCloseMsg,
+             [=](QString userName)
+    {
+        this->sendMessage( M_Logout, userName );
+        this->socket->close();
+    });
 }
 
 StartWidget::~StartWidget()
@@ -42,19 +61,21 @@ StartWidget::~StartWidget()
 
 void StartWidget::on_buttonLogin_clicked()
 {
+    task = Task_Login;
     connectToServer();
     if( isConnected )
     {
-        sendInfo(M_Login);
+        sendUserInfo(M_Login);
     }
 }
 
 void StartWidget::on_buttonRegister_clicked()
 {
+    task = Task_Reg;
     connectToServer();
     if( isConnected )
     {
-        sendInfo(M_Register);
+        sendUserInfo(M_Register);
     }
 }
 
@@ -70,30 +91,28 @@ void StartWidget::connectToServer()
     }
 }
 
-void StartWidget::sendInfo(MessageType type)
+void StartWidget::sendUserInfo(MessageType type)
 {
     QString userName = ui->lineUser->text();
-    QString passport = ui->linePassport->text();
+    QString password = ui->linePassport->text();
 
     if( userName.isEmpty() )
     {
         QMessageBox::information(this, tr("错误"), tr("请输入用户名"));
         return;
     }
-    if( passport.isEmpty() )
+    if( password.isEmpty() )
     {
         QMessageBox::information(this, tr("错误"), tr("请输入密码"));
         return;
     }
 
-    QString message = QString( "%1\n%2\n%3" ).arg( type )
-            .arg( userName ).arg( passport );
-    socket->write( message.toUtf8() );
+    sendMessage( type, userName + '\n' + password );
 }
 
-void StartWidget::sendMessage(QString msg)
+void StartWidget::sendMessage(MessageType type, QString msg)
 {
-    QString message = QString( "%1\n%2" ).arg( M_Message )
+    QString message = QString( "%1\n%2" ).arg( type )
             .arg( msg );
     socket->write( message.toUtf8() );
 }
@@ -119,23 +138,27 @@ void StartWidget::recvMessage()
         showWrong( tr("错误"), tr("该用户名已存在") );
         break;
     case M_DestNotExist:
-        showWrong( tr("错误"), tr("用户不存在") );
+        showWrongChatWindow( tr("错误"), tr("用户不存在") );
         break;
     case M_DestNotOnLine:
-        showWrong( tr("错误"), tr("用户不在线") );
+        showWrongChatWindow( tr("错误"), tr("用户不在线") );
         break;
     case M_Message:
-        showMessage(message);
+        chatWidget.newMessage(message);
         break;
     case M_LoginSuccess:
         this->close();
         chatWidget.show();
+        chatWidget.setUserName(message);
         break;
     case M_RegisterSuccess:
         showInfomation( tr("成功"), tr("注册成功"));
         break;
     case M_SendSuccess:
         chatWidget.sendSuccess();
+        break;
+    case M_UpdateUserList:
+        chatWidget.updateUserList(message);
         break;
     default:
         break;
@@ -147,26 +170,32 @@ void StartWidget::showWrong(QString title, QString word)
     QMessageBox::critical( this, title, word);
 }
 
+void StartWidget::showWrongChatWindow(QString title, QString word)
+{
+    QMessageBox::critical( &chatWidget, title, word);
+}
+
 void StartWidget::showInfomation(QString title, QString word)
 {
     QMessageBox::information( this, title, word);
 }
 
-void StartWidget::connectedToServer()
+void StartWidget::connectedToServerSuccess()
 {
     timer->stop();
     ui->lineIp->setEnabled(false);
     isConnected = true;
+
+    if( Task_Login == task )
+        on_buttonLogin_clicked();
+    else if( Task_Reg == task )
+        on_buttonRegister_clicked();
 }
+
 void StartWidget::timeOut()
 {
     if( !isConnected )
     {
-        QMessageBox::critical(this, tr("失败"), tr("连接服务器失败"));;
+        showWrong(tr("失败"), tr("连接服务器失败"));
     }
-}
-
-void StartWidget::showMessage(QString msg)
-{
-    chatWidget.newMessage(msg);
 }

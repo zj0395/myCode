@@ -1,6 +1,7 @@
 #ifndef SQL_H
 #define SQL_H
 
+#include "../TcpDefines.h"
 #include <QObject>
 #include <QSqlDatabase>
 
@@ -10,8 +11,9 @@ class Sql : public QObject
 public:
     explicit Sql(QObject *parent = nullptr);
     ~Sql();
-    bool login(QString name, QString password);
-    bool insert(QString name, QString password);
+    MessageType login(const QString name, const QString password);
+    MessageType insert(QString name, QString password);
+    bool find( QString name );
 
 signals:
 

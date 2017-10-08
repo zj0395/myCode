@@ -8,17 +8,17 @@
 #include "sql.h"
 #include "../TcpDefines.h"
 
-struct User
+struct OnlineUser
 {
+    OnlineUser(){socket=nullptr;}
     QString userName;
-    QString passWord;
     QTcpSocket* socket;
 };
 
 class TcpServer : public QObject
 {
     Q_OBJECT
-    typedef std::map<QString, User> MStrToUser;
+    typedef std::map<QString, OnlineUser> MStrToUser;
 
 public:
     TcpServer(QObject *parent = 0);
@@ -26,15 +26,15 @@ public:
 
 private:
     QTcpServer * server;
-//    Sql db;
+    Sql db;
     MStrToUser userInfo;
 
 private:
     void newConnect();
     void analysisMessage(QString , QTcpSocket *socket);
-    void sendMsgToUser(User &, User&, QString );
+    void sendMsgToUser(OnlineUser &, OnlineUser&, QString );
     void sendRetToUser(MessageType, QTcpSocket *, QString );
-    User& findFromUser(QTcpSocket* socket);
+    OnlineUser& findFromUser(QTcpSocket* socket);
 };
 
 #endif // WIDGET_H

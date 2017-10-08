@@ -14,6 +14,11 @@ class StartWidget;
 class StartWidget : public QWidget
 {
     Q_OBJECT
+    enum WaittingTask{
+        Task_Nothing = 0,
+        Task_Login,
+        Task_Reg,
+    };
 
 public:
     explicit StartWidget(QWidget *parent = 0);
@@ -30,16 +35,20 @@ private:
     QTimer *timer;
     ChatWidget chatWidget;
     bool isConnected;
+    WaittingTask task;
+
 
 private:
     void connectToServer();
-    void sendInfo(MessageType);
-    void sendMessage(QString message);
+
+    void sendUserInfo(MessageType);
+    void sendMessage(MessageType type, QString message);
     void recvMessage();
+
     void showWrong(QString title, QString word);
-    void showMessage(QString msg);
+    void showWrongChatWindow(QString title, QString word);
     void showInfomation(QString title, QString word);
-    void connectedToServer();
+    void connectedToServerSuccess();
     void timeOut();
 };
 

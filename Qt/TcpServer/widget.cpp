@@ -1,7 +1,10 @@
 #include "widget.h"
 #include <QHostAddress>
 #include <QTcpSocket>
+#include <QTimer>
 
+//一天
+#define USER_INFO_TTL 1000*60*60*24
 
 #define SEND_RET_BACK(Type, UserName)\
 {\
@@ -50,60 +53,91 @@ void TcpServer::analysisMessage(QString message, QTcpSocket *socket)
     {
         QString userName = message.left( index );
         QString passWord = message.mid( index+1 );
-        qDebug()<<userName<<passWord;
+
+//        qDebug()<<userName<<passWord;
+
         if( M_Login == type )
         {
-            qDebug()<<"logib";
-//            db.login( userName, passWord );
+            MessageType loginStatus = db.login( userName, passWord );
             //login fail. userName don't exist
-            if( userInfo.find( userName ) == userInfo.end() )
+            if(  M_LoginSuccess == loginStatus )
             {
-                SEND_RET_BACK( M_WrongUserName, userName );
-            }
-            User & user = userInfo[userName];
-            if( passWord == user.passWord )
-            {
+                qDebug()<<userName<<"Login Success";
+                OnlineUser & user = userInfo[userName];
                 user.socket = socket;
-                SEND_RET_BACK( M_LoginSuccess, userName  );
+                user.userName = userName;
             }
             else
             {
-                SEND_RET_BACK( M_WrongPassword, userName  );
+                qDebug()<<userName<<"Login Fail";
             }
+
+            SEND_RET_BACK( loginStatus, userName );
         }
         else
         {
-            //register fail. userName exist
-            if( userInfo.find( userName ) != userInfo.end() )
+            MessageType regStatus = db.insert( userName, passWord );
+
+            if( M_RegisterSuccess ==  regStatus )
             {
-                SEND_RET_BACK( M_UserNameExist, userName );
+                qDebug()<<userName<<"Reg Success";
             }
-            User & user = userInfo[userName];
-            user.userName = userName;
-            user.passWord = passWord;
-            SEND_RET_BACK( M_RegisterSuccess, userName  );
+            else
+                qDebug()<<userName<<"Reg Fail";
+
+            SEND_RET_BACK( regStatus, userName  );
         }
     }
     else if( M_Message == type )
     {
+        QString fromUserName = message.left( index );
+        message = message.mid( index+1, -1 );
+        index = message.indexOf("\n");
         QString destUserName = message.left( index );
         QString str = message.mid( index+1 );
-        if( userInfo.find( destUserName ) == userInfo.end() )
+        if(   !db.find( destUserName )   )
         {
             SEND_RET_BACK( M_DestNotExist, destUserName );
         }
-//        User fromUser = findFromUser(socket);
-        User & destUser = userInfo[destUserName];
+        OnlineUser & fromUser = userInfo[fromUserName];
+        OnlineUser & destUser = userInfo[destUserName];
         if( destUser.socket == nullptr )
         {
             SEND_RET_BACK( M_DestNotOnLine, destUserName );
         }
-        sendMsgToUser( destUser, destUser, str );
+        sendMsgToUser( fromUser, destUser, str );
         sendRetToUser( M_SendSuccess, socket, "" );
+    }
+    else if( M_UpdateUserList == type )
+    {
+        QString msg;
+        for_each( userInfo.begin(), userInfo.end(),
+                  [&](std::map<QString, OnlineUser>::reference a)
+        {
+           if( a.second.socket == nullptr )
+               msg += '0' + a.second.userName + '\n';
+           else
+               msg += '1' + a.second.userName + '\n';
+        });
+        sendRetToUser( M_UpdateUserList, socket, msg );
+    }
+    else if( M_Logout == type )
+    {
+        QString userName = message;
+        OnlineUser & user = userInfo[userName];
+        user.socket->close();
+        //设置为离线状态
+        user.socket = nullptr;
+        //过一段时间后删除该用户的在线信息
+        QTimer::singleShot( USER_INFO_TTL, Qt::VeryCoarseTimer,
+                            [userName, this]()
+        {
+            this->userInfo.erase( userName );
+        });
     }
 }
 
-void TcpServer::sendMsgToUser(User& fromUser, User & destUser, QString str)
+void TcpServer::sendMsgToUser(OnlineUser& fromUser, OnlineUser & destUser, QString str)
 {
     QString message = QString( "%1\n%2\n%3" ).arg( M_Message )
             .arg( fromUser.userName ).arg( str );
@@ -117,10 +151,10 @@ void TcpServer::sendRetToUser(MessageType ret, QTcpSocket * socket, QString user
     socket->write( message.toUtf8() );
 }
 
-User &TcpServer::findFromUser(QTcpSocket *socket)
+OnlineUser &TcpServer::findFromUser(QTcpSocket *socket)
 {
     for_each( userInfo.begin(), userInfo.end(),
-              [=](std::map<QString, User>::reference a)
+              [=](std::map<QString, OnlineUser>::reference a)
     {
        if( a.second.socket == socket )
            return a.second;
