@@ -38,10 +38,13 @@ void TcpServer::analysisMessage(QString message, QTcpSocket *socket)
 {
     if( message.isEmpty() )
         return;
-    MessageType type = static_cast<MessageType>(message.left(1).toInt());
-    message = message.mid( 2, -1 );
 
     int index = message.indexOf("\n");
+
+    MessageType type = static_cast<MessageType>(message.left(index).toInt());
+    message = message.mid( index+1, -1 );
+
+    index = message.indexOf("\n");
 
     if( M_Login == type || M_Register == type )
     {
@@ -51,7 +54,7 @@ void TcpServer::analysisMessage(QString message, QTcpSocket *socket)
         if( M_Login == type )
         {
             qDebug()<<"logib";
-            db.login( userName, passWord );
+//            db.login( userName, passWord );
             //login fail. userName don't exist
             if( userInfo.find( userName ) == userInfo.end() )
             {
