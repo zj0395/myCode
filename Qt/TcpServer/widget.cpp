@@ -124,6 +124,7 @@ void TcpServer::analysisMessage(QString message, QTcpSocket *socket)
     else if( M_Logout == type )
     {
         QString userName = message;
+        qDebug()<<userName<<"Log Out";
         OnlineUser & user = userInfo[userName];
         user.socket->close();
         //设置为离线状态

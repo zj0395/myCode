@@ -6,6 +6,7 @@
 #include <QHostInfo>
 #include <QTimer>
 #include <QMessageBox>
+#include <QTime>
 
 #pragma execution_character_set("utf-8")
 
@@ -50,6 +51,10 @@ StartWidget::StartWidget(QWidget *parent) :
              [=](QString userName)
     {
         this->sendMessage( M_Logout, userName );
+        //解决网速较慢时不能正常退出的问题
+        QTime dieTime = QTime::currentTime().addMSecs(100);
+        while( QTime::currentTime() < dieTime )
+            QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
         this->socket->close();
     });
 }
