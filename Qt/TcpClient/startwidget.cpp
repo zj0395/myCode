@@ -9,6 +9,8 @@
 
 #pragma execution_character_set("utf-8")
 
+#define DEFAULT_IP  "101.200.144.41"
+
 
 StartWidget::StartWidget(QWidget *parent) :
     QWidget(parent),
@@ -16,6 +18,7 @@ StartWidget::StartWidget(QWidget *parent) :
 {
     ui->setupUi(this);
     this->setWindowFlags( windowFlags() | Qt::WindowStaysOnTopHint );
+    ui->lineIp->setText(DEFAULT_IP);
     setWindowTitle( tr("登录") );
     isConnected = false;
 

@@ -1,9 +1,9 @@
 #include "widget.h"
-#include <QApplication>
+#include <QCoreApplication>
 
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
+    QCoreApplication a(argc, argv);
     TcpServer s;
 
     return a.exec();
