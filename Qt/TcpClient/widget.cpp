@@ -1,39 +1,49 @@
 #include "widget.h"
 #include "ui_widget.h"
 #include <QHostAddress>
+#include <QKeyEvent>
 
-TcpServer::TcpServer(QWidget *parent) :
+ChatWidget::ChatWidget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Widget)
 {
     ui->setupUi(this);
-    this->setWindowTitle( tr("Client") );
-
-    connect(&socket, &QTcpSocket::connected, this, &TcpServer::connectSuccess);
+    this->setWindowTitle( tr("Chat") );
+    this->setWindowFlags( windowFlags() | Qt::WindowStaysOnTopHint );
 }
 
-TcpServer::~TcpServer()
+ChatWidget::~ChatWidget()
 {
     delete ui;
 }
 
-void TcpServer::newMessage()
+void ChatWidget::newMessage(QString temp)
 {
-    QString temp( socket.readAll() );
-    ui->TextRead->append( temp );
+    QString msg = temp.mid( temp.indexOf('\n')+1 );
+    ui->TextRead->append( msg );
 }
 
-void TcpServer::connectSuccess()
+void ChatWidget::on_buttonSend_clicked()
 {
-    ui->TextRead->append( "Connect Success" );
+    QString destName = ui->lineDestName->text();
+
+    QString str( ui->TextWrite->toPlainText().toUtf8() );
+    if( str.isEmpty() )
+        return;
+
+    QString msg = QString("%1\n%2").arg( destName ).arg( str );
+    emit( sendMsg( msg ) );
 }
 
-void TcpServer::on_buttonSend_clicked()
+void ChatWidget::keyPressEvent(QKeyEvent *e)
 {
-    socket.write( ui->TextWrite->toPlainText().toUtf8() );
+    if( (e->modifiers() & Qt::ControlModifier) && e->key() == Qt::Key_Enter )
+    {
+        on_buttonSend_clicked();
+    }
+}
+
+void ChatWidget::sendSuccess()
+{
     ui->TextWrite->clear();
-}
-
-void TcpServer::on_buttonConnect_clicked()
-{
 }

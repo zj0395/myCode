@@ -4,8 +4,9 @@
 #
 #-------------------------------------------------
 
-QT       += core gui network sql
+QT       += core network sql
 CONFIG   += C++11
+CONFIG   += static
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 

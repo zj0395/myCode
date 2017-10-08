@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include "../TcpDefines.h"
+#include "widget.h"
 
 class QTcpSocket;
 class QTimer;
@@ -27,10 +28,19 @@ private:
     Ui::StartWidget *ui;
     QTcpSocket *socket;
     QTimer *timer;
+    ChatWidget chatWidget;
+    bool isConnected;
 
 private:
     void connectToServer();
-    void sendMessage(MessageType);
+    void sendInfo(MessageType);
+    void sendMessage(QString message);
+    void recvMessage();
+    void showWrong(QString title, QString word);
+    void showMessage(QString msg);
+    void showInfomation(QString title, QString word);
+    void connectedToServer();
+    void timeOut();
 };
 
 #endif // STARTWIDGET_H

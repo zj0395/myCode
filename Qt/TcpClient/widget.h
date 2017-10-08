@@ -9,25 +9,26 @@ namespace Ui {
 class Widget;
 }
 
-class TcpServer : public QWidget
+class ChatWidget : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit TcpServer(QWidget *parent = 0);
-    ~TcpServer();
+    explicit ChatWidget(QWidget *parent = 0);
+    ~ChatWidget();
 
-    void newMessage();
-    void connectSuccess();
+    void newMessage(QString temp);
 
+    void sendSuccess();
 private slots:
     void on_buttonSend_clicked();
 
-    void on_buttonConnect_clicked();
+signals:
+    void sendMsg(QString msg);
 
 private:
     Ui::Widget *ui;
-    QTcpSocket socket;
+    void keyPressEvent(QKeyEvent *event);
 };
 
 #endif // WIDGET_H
