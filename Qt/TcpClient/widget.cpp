@@ -47,3 +47,8 @@ void ChatWidget::sendSuccess()
 {
     ui->TextWrite->clear();
 }
+
+void ChatWidget::on_buttonUpdate_clicked()
+{
+
+}

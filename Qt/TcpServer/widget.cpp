@@ -2,6 +2,13 @@
 #include <QHostAddress>
 #include <QTcpSocket>
 
+
+#define SEND_RET_BACK(Type, UserName)\
+{\
+    sendRetToUser(Type, socket, UserName);\
+    return;\
+}
+
 TcpServer::TcpServer(QObject *parent)
     : QObject(parent)
 {
@@ -27,12 +34,6 @@ void TcpServer::newConnect()
     });
 }
 
-#define SEND_RET_BACK(Type, UserName)\
-{\
-    sendRetToUser(Type, socket, UserName);\
-    return;\
-}
-
 void TcpServer::analysisMessage(QString message, QTcpSocket *socket)
 {
     if( message.isEmpty() )
@@ -46,9 +47,11 @@ void TcpServer::analysisMessage(QString message, QTcpSocket *socket)
     {
         QString userName = message.left( index );
         QString passWord = message.mid( index+1 );
-//        qDebug()<<userName<<passWord;
+        qDebug()<<userName<<passWord;
         if( M_Login == type )
         {
+            qDebug()<<"logib";
+            db.login( userName, passWord );
             //login fail. userName don't exist
             if( userInfo.find( userName ) == userInfo.end() )
             {

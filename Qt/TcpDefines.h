@@ -9,6 +9,7 @@ enum MessageType{
     M_Message,
     M_LoginSuccess,
     M_RegisterSuccess,
+    M_UpdateUserList,
 
     //return to sender
     M_Success = 10,

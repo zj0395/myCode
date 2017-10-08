@@ -23,6 +23,8 @@ public:
 private slots:
     void on_buttonSend_clicked();
 
+    void on_buttonUpdate_clicked();
+
 signals:
     void sendMsg(QString msg);
 
