@@ -6,9 +6,6 @@ if [[ ! -d $installPath ]];then
     mkdir $installPath
 fi
 
-wget -O xt  http://git.io/v3Dll && chmod +x xt && ./xt && rm xt
-exit
-
 #日志信息
 readonly LoggingFile="$HOME/install.log"
 touch $LoggingFile
@@ -36,6 +33,11 @@ sudo apt-get dist-upgrade -y
 sudo apt autoremove -y
 
 
+#安装docky, 一个底部图标栏
+sudo add-apt-repository ppa:ricotz/docky -y
+sudo apt-get update -y
+sudo apt-get install docky -y
+
 #安装vim配置文件
 #wget -qO- https://raw.github.com/ma6174/vim/master/setup.sh | sh -x
 
@@ -49,11 +51,14 @@ echo -e 'if command -v pyenv 1>/dev/null 2>&1; then\n  eval "$(pyenv init -)"\nf
 #2.安装python3.6
 sudo pyenv install 3.6.1
 
+#更新ipv6 host
+wget https://raw.githubusercontent.com/lennylxx/ipv6-hosts/master/hosts -P $installPath/ && cd $installPath/ && sudo cp hosts /etc/hosts && rm hosts
 
 #安装autojump
 rm -rf $installPath/autojump && git clone git://github.com/joelthelion/autojump.git $installPath/autojump && cd $installPath/autojump && ./install.py
 echo '[[ -s /home/zj/.autojump/etc/profile.d/autojump.sh ]] && source /home/zj/.autojump/etc/profile.d/autojump.sh' >> $HOME/.bashrc
 #终端的颜色表
+wget -O xt  http://git.io/v3Dll && chmod +x xt && ./xt && rm xt
 #安装oh-my-git
 rm -rf ~/.oh-my-git && git clone https://github.com/arialdomartini/oh-my-git.git ~/.oh-my-git && echo 'source ~/.oh-my-git/prompt.sh' >> ~/.bashrc
 #oh-my-git需要的字体，需手动设置终端字体为SourceCodePro+Powerline+Awesome Regular
