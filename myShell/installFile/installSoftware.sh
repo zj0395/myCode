@@ -59,6 +59,8 @@ echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc
 echo -e 'if command -v pyenv 1>/dev/null 2>&1; then\n  eval "$(pyenv init -)"\nfi' >> ~/.bashrc
 #2.安装python3.6
 pyenv install 3.6.3
+pip install autoenv
+echo "source `which activate.sh`" >> ~/.bashrc
 
 #更新ipv6 host
 wget https://raw.githubusercontent.com/lennylxx/ipv6-hosts/master/hosts -P "$installPath"/ && cd $installPath/ && sudo cp hosts /etc/hosts && rm hosts

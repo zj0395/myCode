@@ -1,4 +1,4 @@
-vim
+vim-gnome
 chromium-browser
 syspeek
 git
@@ -6,7 +6,6 @@ exfat-fuse
 unrar
 moeditor
 tmux
-lantern
 wps-office
 python-nose
 gnome-tweak-tool
