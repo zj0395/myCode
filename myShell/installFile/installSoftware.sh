@@ -12,9 +12,10 @@ touch $LoggingFile
 exec 2>$LoggingFile
 
 #首先删除不必要的软件
-sudo apt-get remove libreoffice-common unity-webapps-common thunderbird totem rhythmbox empathy brasero simple-scan gnome-mahjongg aisleriot gnome-mines cheese transmission-common gnome-orca webbrowser-app gnome-sudoku  landscape-client-ui-install onboard deja-dup -y
+sudo apt-get remove libreoffice-common thunderbird totem rhythmbox simple-scan aisleriot gnome-mines cheese transmission-common gnome-orca gnome-sudoku deja-dup -y
 sudo apt autoremove -y
 
+#开始安装文件列表中软件
 readonly aptFile="softList"
 cat $aptFile | while read Line
 do
@@ -25,16 +26,23 @@ do
 done
 
 
-#把源设置为源
+#把源设置为清华大学源
 cd sources && sudo ./setSource.sh
 sudo apt-get update -y
 sudo apt-get upgrade -y
 sudo apt-get dist-upgrade -y
 sudo apt autoremove -y
 
+#搜狗输入法
+#官网下载，使用dpkg -i命令安装，再sudo apt install -f
+#设置模式从 ibus 到 fcitx，重登录，搜索fcitx configure，打开，添加搜狗输入法
+
+#网易云音乐
+wget http://s1.music.126.net/download/pc/netease-cloud-music_1.0.0-2_amd64_ubuntu16.04.deb -P $installPath/ && cd $installPath && sudo dpkg -i netease-cloud-music*.deb
+sudo apt install -f -y
 
 #安装docky, 一个底部图标栏
-sudo add-apt-repository ppa:ricotz/docky -y
+sudo add-apt-repository ppa:docky-core/stable -y
 sudo apt-get update -y
 sudo apt-get install docky -y
 
