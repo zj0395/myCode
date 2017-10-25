@@ -1,14 +1,15 @@
-vim-gnome
+vim-gnome kedsudo gksu
 chromium-browser
 syspeek
 git
 exfat-fuse
 unrar
-moeditor
+sl cmatrix
 tmux
 wps-office
 python-nose
 gnome-tweak-tool
 silversearcher-ag
 shellcheck
+g++-7-multilib libgl1-mesa-dev
 make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev libncursesw5-dev xz-utils tk-dev

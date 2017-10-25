@@ -1,32 +1,86 @@
 #!/bin/bash
-readonly aptFile="softListTmp"
-
-#放置安装文件
+readonly aptFile="softList"
+readonly pipFile="pipList"
+readonly wgetFile="wgetList"
 readonly installPath="$HOME/installFile"
+readonly preInstallPath="$installPath"/Pre
+readonly LoggingFile="$HOME/install.log"
+
+#从网上下载安装包再安装的软件，文件中以 1 开头表示此包将在其它包之前安装
+function wgetInstall()
+{
+    echo "$installPath";
+    if [ -n "$installPath" ];then
+        rm "$installPath"/*.deb
+    fi
+    while read -r Line
+    do
+        next=false
+        Path="$installPath"
+        url="$Line"
+        for s in $Line
+        do
+            if [[ "$s" = "1"  ]];then
+                Path="$preInstallPath"
+                next=true
+            fi
+            if [ $next ];then
+                url=$s;
+            fi
+        done
+        wget "$url" -P "$Path"
+        if [ $? ];then
+            echo "Download $Line Fail" >&2
+        fi
+    done < $wgetFile
+    cd "$preInstallPath" && sudo dpkg -i ./*.deb
+    cd "$installPath" && sudo dpkg -i ./*.deb
+}
+
+#用pip安装的库
+function  pipInstall()
+{
+	while read -r Line 
+	do
+	    for soft in $Line
+	    do
+	        pip install "$soft"
+	        if [ $? ];then
+	            echo "Pip Install $soft Fail" >&2
+	        fi
+	    done
+	done < $pipFile
+}
+
+#用apt-get安装的软件
+function aptInstall()
+{
+	while read -r Line 
+	do
+	    for soft in $Line
+	    do
+	        sudo apt-get install "$soft" -y
+	        if [ $? ];then
+	            echo "Install $soft Fail" >&2
+	        fi
+	    done
+	done < $aptFile
+}
+
+#日志信息
+touch "$LoggingFile"
+exec 2> "$LoggingFile"
+
+#放置下载路径的保存路径
 if [[ ! -d $installPath ]];then
     mkdir "$installPath"
 fi
 
-#日志信息
-readonly LoggingFile="$HOME/install.log"
-touch "$LoggingFile"
-exec 2> "$LoggingFile"
-
 #首先删除不必要的软件
-sudo apt-get remove libreoffice-common thunderbird totem rhythmbox simple-scan aisleriot gnome-mines cheese transmission-common gnome-orca gnome-sudoku deja-dup -y
+sudo apt-get remove libreoffice-common thunderbird totem \
+    rhythmbox simple-scan aisleriot cheese transmission-common\
+    gnome-orca deja-dup -y
 sudo apt autoremove -y
-
-#开始安装文件列表中软件
-while read -r Line 
-do
-    for soft in $Line
-    do
-        sudo apt-get install "$soft" -y
-        if [[ $? ]];then
-            echo "Install $soft Fail" >&2
-        fi
-    done
-done < $aptFile
 
 #把源设置为清华大学源
 cd sources && sudo ./setSource.sh
@@ -35,13 +89,13 @@ sudo apt-get upgrade -y
 sudo apt-get dist-upgrade -y
 sudo apt autoremove -y
 
+aptInstall
+pipInstall
+wgetInstall
+
 #搜狗输入法
 #官网下载，使用dpkg -i命令安装，再sudo apt install -f
 #设置模式从 ibus 到 fcitx，重登录，搜索fcitx configure，打开，添加搜狗输入法
-
-#网易云音乐
-wget http://s1.music.126.net/download/pc/netease-cloud-music_1.0.0-2_amd64_ubuntu16.04.deb -P "$installPath"/ && cd "$installPath" && sudo dpkg -i netease-cloud-music*.deb
-sudo apt install -f -y
 
 #安装docky, 一个底部图标栏
 sudo add-apt-repository ppa:docky-core/stable -y
@@ -59,14 +113,19 @@ echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc
 echo -e 'if command -v pyenv 1>/dev/null 2>&1; then\n  eval "$(pyenv init -)"\nfi' >> ~/.bashrc
 #2.安装python3.6
 pyenv install 3.6.3
-pip install autoenv
+#pip设为清华大学源
+mkdir ~/.pip
+echo "[global]
+index-url = https://pypi.tuna.tsinghua.edu.cn/simple
+[install]
+trusted-host = https://pypi.tuna.tsinghua.edu.cn/simple" > ~/.pip/pip.conf
+#用pip安装库
+pipInstall
+#autoenv的环境变量
 echo "source `which activate.sh`" >> ~/.bashrc
 
 #更新ipv6 host
 wget https://raw.githubusercontent.com/lennylxx/ipv6-hosts/master/hosts -P "$installPath"/ && cd $installPath/ && sudo cp hosts /etc/hosts && rm hosts
-
-#lantern，翻墙
-wget https://raw.githubusercontent.com/getlantern/lantern-binaries/master/lantern-installer-64-bit.deb -P "$installPath" && cd $installPath/ && sudo dpkg -i lantern-installer*.deb
 
 #安装autojump
 rm -rf "$installPath"/autojump && git clone git://github.com/joelthelion/autojump.git "$installPath"/autojump && cd "$installPath"/autojump && ./install.py
