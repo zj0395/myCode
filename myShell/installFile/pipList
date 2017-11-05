@@ -3,3 +3,4 @@ matplotlib
 autoenv
 sklearn
 scipy
+tensorflow-gpu
