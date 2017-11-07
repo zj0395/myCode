@@ -170,8 +170,9 @@ function gitInstall()
 }
 
 #wgetInstall
-pipInstall
-pipAfterInstall
+#pipInstall
+#pipAfterInstall
+gitInstall
 
 #搜狗输入法
 #官网下载，使用dpkg -i命令安装，再sudo apt install -f
