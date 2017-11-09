@@ -49,8 +49,8 @@ function wgetInstall()
             echo "Download $Line Fail" >&2
         fi
     done < $wgetFile
-    cd "$preInstallPath" && sudo dpkg -i ./*.deb -y
-    cd "$installPath" && sudo dpkg -i ./*.deb -y
+    cd "$preInstallPath" && sudo dpkg -i ./*.deb
+    cd "$installPath" && sudo dpkg -i ./*.deb 
     sudo apt-get install -f
     update
 }
@@ -67,6 +67,7 @@ function ppaAdd()
 #用pip安装的库
 function  pipInstall()
 {
+	pip install --upgrade pip
 	while read -r Line 
 	do
 	    for soft in $Line
@@ -131,14 +132,16 @@ function setPyenv()
     echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bashrc
     echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc
     echo -e 'if command -v pyenv 1>/dev/null 2>&1; then\n  eval "$(pyenv init -)"\nfi' >> ~/.bashrc
-    #2.安装python3.6
-    pyenv install 3.6.3
+    #2.安装python3.5
+    source ~/.bashrc
+    pyenv install 3.5.0
     #pip设为清华大学源
     mkdir ~/.pip
     echo "[global]
-    index-url = https://pypi.tuna.tsinghua.edu.cn/simple
-    [install]
-    trusted-host = https://pypi.tuna.tsinghua.edu.cn/simple" > ~/.pip/pip.conf
+index-url = https://pypi.tuna.tsinghua.edu.cn/simple
+[install]
+trusted-host = https://pypi.tuna.tsinghua.edu.cn/simple" > ~/.pip/pip.conf
+    pyenv global 3.5.0
 }
 
 function setHost()
@@ -156,7 +159,7 @@ function gitInstall()
     #终端的颜色表
     wget -O xt  http://git.io/v3Dll && sudo chmod +x xt && sudo  ./xt && sudo rm xt
     #安装oh-my-git
-    rm -rf ~/.oh-my-git && git clone https://github.com/arialdomartini/oh-my-git.git ~/.oh-my-git && echo 'source ~/.oh-my-git/prompt.sh' >> ~/.bashrc
+    rm -rf ~/.oh-my-git && git clone https://github.com/arialdomartini/oh-my-git.git ~/.oh-my-git && echo '#source ~/.oh-my-git/prompt.sh' >> ~/.bashrc
     #oh-my-git需要的字体，需手动设置终端字体为SourceCodePro+Powerline+Awesome Regular
     cd /tmp && git clone http://github.com/gabrielelana/awesome-terminal-fonts &&\
         cd awesome-terminal-fonts && git checkout patching-strategy &&\
@@ -175,11 +178,11 @@ function gitInstall()
 #setHost
 #ppaAdd
 #aptInstall
-#wgetInstall
 #setPyenv
-#gitInstall
 #pipInstall
 #pipAfterInstall
+#wgetInstall
+#gitInstall
 #setVim
 
 #搜狗输入法

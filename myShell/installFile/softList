@@ -1,4 +1,4 @@
-vim-gnome kedsudo gksu
+vim-gnome kdesudo gksu
 chromium-browser
 transmission
 syspeek
@@ -7,7 +7,6 @@ exfat-fuse
 unrar
 sl cmatrix
 tmux
-wps-office
 python-nose
 gnome-tweak-tool
 silversearcher-ag
