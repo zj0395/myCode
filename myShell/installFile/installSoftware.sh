@@ -11,6 +11,7 @@ readonly LoggingFile="$HOME/install.log"
 #日志信息
 touch "$LoggingFile"
 exec 2> "$LoggingFile"
+
 #放置下载de soft
 if [[ ! -d $installPath ]];then
     mkdir "$installPath"
@@ -25,7 +26,6 @@ function update()
 #从网上下载安装包再安装的软件，文件中以 1 开头表示此包将在其它包之前安装
 function wgetInstall()
 {
-    echo "$installPath";
     if [ -n "$installPath" ];then
         rm "$installPath"/*.deb
     fi
@@ -44,13 +44,13 @@ function wgetInstall()
                 url=$s;
             fi
         done
-        sudo wget "$url" -P "$Path"
+        wget "$url" -P "$Path"
         if [ $? ];then
             echo "Download $Line Fail" >&2
         fi
     done < $wgetFile
-    cd "$preInstallPath" && sudo dpkg -i ./*.deb
-    cd "$installPath" && sudo dpkg -i ./*.deb
+    cd "$preInstallPath" && sudo dpkg -i ./*.deb -y
+    cd "$installPath" && sudo dpkg -i ./*.deb -y
     sudo apt-get install -f
     update
 }
@@ -97,6 +97,7 @@ function aptInstall()
 	        fi
 	    done
 	done < "$aptFile"
+	update
 }
 
 function removeSoft()
@@ -153,7 +154,7 @@ function gitInstall()
     rm -rf "$installPath"/autojump && git clone git://github.com/joelthelion/autojump.git "$installPath"/autojump && cd "$installPath"/autojump && ./install.py
     echo '[[ -s /home/zj/.autojump/etc/profile.d/autojump.sh ]] && source /home/zj/.autojump/etc/profile.d/autojump.sh' >> $HOME/.bashrc
     #终端的颜色表
-    sudo wget -O xt  http://git.io/v3Dll &&sudo chmod +x xt &&sudo  ./xt &&sudo rm xt
+    wget -O xt  http://git.io/v3Dll && sudo chmod +x xt && sudo  ./xt && sudo rm xt
     #安装oh-my-git
     rm -rf ~/.oh-my-git && git clone https://github.com/arialdomartini/oh-my-git.git ~/.oh-my-git && echo 'source ~/.oh-my-git/prompt.sh' >> ~/.bashrc
     #oh-my-git需要的字体，需手动设置终端字体为SourceCodePro+Powerline+Awesome Regular
@@ -169,10 +170,17 @@ function gitInstall()
         echo "run-shell ~/.tmux/tmux-resurrect/reurrect.tmux" >> ~/.tmux.conf
 }
 
+#removeSoft
+#setSoftSource
+#setHost
+#ppaAdd
+#aptInstall
 #wgetInstall
+#setPyenv
+#gitInstall
 #pipInstall
 #pipAfterInstall
-gitInstall
+#setVim
 
 #搜狗输入法
 #官网下载，使用dpkg -i命令安装，再sudo apt install -f
