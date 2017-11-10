@@ -159,7 +159,7 @@ function gitInstall()
     #终端的颜色表
     wget -O xt  http://git.io/v3Dll && sudo chmod +x xt && sudo  ./xt && sudo rm xt
     #安装oh-my-git
-    rm -rf ~/.oh-my-git && git clone https://github.com/arialdomartini/oh-my-git.git ~/.oh-my-git && echo '#source ~/.oh-my-git/prompt.sh' >> ~/.bashrc
+    rm -rf ~/.oh-my-git && git clone https://github.com/arialdomartini/oh-my-git.git ~/.oh-my-git && echo 'source ~/.oh-my-git/prompt.sh' >> ~/.bashrc
     #oh-my-git需要的字体，需手动设置终端字体为SourceCodePro+Powerline+Awesome Regular
     cd /tmp && git clone http://github.com/gabrielelana/awesome-terminal-fonts &&\
         cd awesome-terminal-fonts && git checkout patching-strategy &&\
