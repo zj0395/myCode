@@ -158,7 +158,7 @@ function gitInstall()
     rm -rf "$installPath"/autojump && git clone git://github.com/joelthelion/autojump.git "$installPath"/autojump && cd "$installPath"/autojump && ./install.py
     echo '[[ -s /home/zj/.autojump/etc/profile.d/autojump.sh ]] && source /home/zj/.autojump/etc/profile.d/autojump.sh' >> $HOME/.bashrc
     #终端的颜色表
-    wget -O xt  http://git.io/v3Dll && sudo chmod +x xt && sudo  ./xt && sudo rm xt
+    wget -O xt  http://git.io/v3Dll && chmod +x xt && ./xt && rm xt
     #安装oh-my-git
     rm -rf ~/.oh-my-git && git clone https://github.com/arialdomartini/oh-my-git.git ~/.oh-my-git && echo 'source ~/.oh-my-git/prompt.sh' >> ~/.bashrc
     #oh-my-git需要的字体，需手动设置终端字体为SourceCodePro+Powerline+Awesome Regular
