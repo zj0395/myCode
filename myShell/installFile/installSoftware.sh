@@ -3,6 +3,7 @@ readonly aptFile="softList"
 readonly pipFile="pipList"
 readonly wgetFile="wgetList"
 readonly ppaFile="ppaList"
+readonly cnpmFile="cnpmList"
 readonly installPath="$HOME/installFile"
 readonly preInstallPath="$installPath"/Pre
 readonly LoggingFile="$HOME/install.log"
@@ -173,6 +174,25 @@ function gitInstall()
         echo "run-shell ~/.tmux/tmux-resurrect/reurrect.tmux" >> ~/.tmux.conf
 }
 
+function setCnpm()
+{
+    npm install -g cnpm --registry=https://registry.npm.taobao.org
+}
+
+function cnpmInstall()
+{
+	while read -r Line 
+	do
+	    for soft in $Line
+	    do
+            cnpm install $soft -g
+	        if [ $? ];then
+	            echo "cnpm Install $soft Fail" >&2
+	        fi
+	    done
+	done < $cnpmList
+}
+
 #removeSoft
 #setSoftSource
 #setHost
@@ -184,6 +204,8 @@ function gitInstall()
 #wgetInstall
 #gitInstall
 #setVim
+#setCnpm
+#cnpmInstall
 
 #搜狗输入法
 #官网下载，使用dpkg -i命令安装，再sudo apt install -f
