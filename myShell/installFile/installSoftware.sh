@@ -167,6 +167,7 @@ function gitInstall()
         mkdir -p ~/.fonts && cp patched/*.ttf ~/.fonts
     sudo fc-cache -fv ~/.fonts
 
+    echo 'set -g default-terminal "sceen-256color"' >> ~/.tmux.conf
     #tmux自动保存和恢复
     mkdir ~/.tmux
     cd ~/.tmux/ && \
@@ -185,12 +186,12 @@ function cnpmInstall()
 	do
 	    for soft in $Line
 	    do
-            cnpm install $soft -g
+            sudo cnpm install $soft -g
 	        if [ $? ];then
 	            echo "cnpm Install $soft Fail" >&2
 	        fi
 	    done
-	done < $cnpmList
+	done < $cnpmFile
 }
 
 #removeSoft
