@@ -1,11 +1,11 @@
 #include "loginform.h"
-#include "ui_mainform.h"
+#include "ui_loginform.h"
 #include "dialoghelp.h"
 #include "queryform.h"
 
 LoginWidget::LoginWidget(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::MainForm)
+    ui(new Ui::LoginForm)
 {
     ui->setupUi(this);
 

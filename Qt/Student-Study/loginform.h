@@ -5,7 +5,7 @@
 #include "sql.h"
 
 namespace Ui {
-class MainForm;
+class LoginForm;
 }
 
 class QueryForm;
@@ -24,7 +24,7 @@ private slots:
     void on_buttonReg_clicked();
 
 private:
-    Ui::MainForm *ui;
+    Ui::LoginForm *ui;
 
     Sql *sql;
 
