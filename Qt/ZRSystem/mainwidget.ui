@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>604</width>
-    <height>390</height>
+    <width>638</width>
+    <height>380</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -48,11 +48,22 @@
     </widget>
    </item>
    <item row="0" column="1">
-    <widget class="QPushButton" name="pushButton">
-     <property name="text">
-      <string>开始计算</string>
-     </property>
-    </widget>
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="QRadioButton" name="radioButton">
+       <property name="text">
+        <string>空行视为0</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton">
+       <property name="text">
+        <string>开始计算</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
   </layout>
  </widget>

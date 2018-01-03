@@ -73,17 +73,17 @@ VQStr  rule0    = { "项目外环境",
 
 const int DegreeSize = 5;//隶属度的个数
 
-#ifdef Q_OS_LINUX
+#ifdef __GNUC__
 inline void myOpenFileOut(ofstream & fs, const QString & filePath)
 {
-    fs.open( filePath.toStdString().c_str(), ios::out|ios::trunc );
+    fs.open( filePath.toStdString().c_str(), std::ios::out|std::ios::trunc );
 }
 inline void myOpenFileIn(ifstream & fs, QString & filePath)
 {
-    fs.open( filePath.toStdString().c_str(), ios::in );
+    fs.open( filePath.toStdString().c_str(), std::ios::in );
 }
 #else
-#ifdef Q_OS_WIN
+#ifdef _MSC_VER
 inline void myOpenFileOut(ofstream & fs, const QString & filePath)
 {
     fs.open( filePath.toStdWString().c_str(), std::ios::out|std::ios::trunc );
@@ -160,6 +160,8 @@ MainWidget::MainWidget(QWidget *parent) :
 
         gLayout->addWidget( tabWidget );
     }
+
+    ui->tabWidget1->setCurrentIndex( 0 );
 }
 
 QHBoxLayout * MainWidget::newLayout(  int layer )
@@ -277,8 +279,9 @@ bool MainWidget::checkLineEdit()
 
 void MainWidget::on_pushButton_clicked()
 {
-//    if( ! checkLineEdit() )
-//        return;
+    if( ! ui->radioButton->isChecked() )
+        if( ! checkLineEdit() )
+            return;
 
     VVDouble degrees;//所有指标层的分数隶属度
     VDouble  oneWeights;//所有指标层的单一权重
