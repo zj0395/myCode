@@ -21,6 +21,8 @@ public:
 
     void closeEvent(QCloseEvent *event);
 
+    void testAddOneRow();
+
     void setModelData(  QPoint pos, const VVDouble &m_layer1, const VVDouble &m_layer0, const VDouble &m_final );
 private:
     Ui::ShowForm *ui;

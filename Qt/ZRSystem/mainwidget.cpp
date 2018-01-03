@@ -12,11 +12,37 @@
 #include <QSettings>
 #include "showform.h"
 
+# pragma execution_character_set("utf-8")//可以使用中文
+
 using std::ofstream;
 using std::ifstream;
 
 
-# pragma execution_character_set("utf-8")//可以使用中文
+#define CHECK_LAYER0( lay, str )\
+{\
+    if( lay->text().isEmpty() )\
+    {\
+        information( "提示", str );\
+        return false;\
+    }\
+}
+
+#define CHECK_LAYER1( lay, idx, str  )\
+{\
+    if( lay->text().isEmpty() )\
+    {\
+        QString info;\
+        if( idx == 0 )\
+            info = "单一权重";\
+        else if(idx == 1 )\
+            info = "复合权重A";\
+        else if( idx == 2 )\
+            info = "复合权重B";\
+        information( "提示", QString("%1 %2 为空").arg(str).arg( info ) );\
+        return false;\
+    }\
+}
+
 
 int   rule0_Num = 4;
 
@@ -233,31 +259,6 @@ MainWidget::~MainWidget()
     delete ui;
 }
 
-#define CHECK_0( lay, str )\
-{\
-    if( lay->text().isEmpty() )\
-    {\
-        information( "提示", str );\
-        return false;\
-    }\
-}
-
-#define CHECK_1( lay, idx, str  )\
-{\
-    if( lay->text().isEmpty() )\
-    {\
-        QString info;\
-        if( idx == 0 )\
-            info = "单一权重";\
-        else if(idx == 1 )\
-            info = "复合权重A";\
-        else if( idx == 2 )\
-            info = "复合权重B";\
-        information( "提示", QString("%1 %2 为空").arg(str).arg( info ) );\
-        return false;\
-    }\
-}
-
 bool MainWidget::checkLineEdit()
 {
 //    for( int i=0; i<layer0.size(); ++i )
@@ -279,8 +280,8 @@ bool MainWidget::checkLineEdit()
         {
             QString end = QString("%1%2-%3").arg(rule2[rule2Idx][j] ).arg( getIdx(rule2Idx) ).arg(j+1);
             for( int i=0; i<3; ++i )
-                CHECK_1( layer2[allIdx*3+i], i, end);
-            CHECK_0( score2[allIdx], QString("%1 得分为空").arg(end) );
+                CHECK_LAYER1( layer2[allIdx*3+i], i, end);
+            CHECK_LAYER0( score2[allIdx], QString("%1 得分为空").arg(end) );
             ++allIdx;
         }
     }

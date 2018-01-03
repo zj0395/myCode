@@ -66,7 +66,10 @@ void ShowForm::addOneRow( QStandardItemModel * model, const VDouble & result, QS
     for( int idx = 1; idx<DegreeSize; ++idx )
     {
         if( result[idx] > maxValue )
+        {
             maxIdx = idx;
+            maxValue = result[idx];
+        }
     }
 
     QList<QStandardItem*> list;
@@ -90,7 +93,7 @@ void ShowForm::setModelData( QPoint pos, const VVDouble &layer1, const VVDouble 
         addOneRow( m_layer0, layer0[i], rule0[i] + QString("R%1").arg(i+1) );
     }
 
-    addOneRow( m_final, final, "目标层结果" );
+    addOneRow( m_final, final, "风险预警" );
 
     this->move( pos );
     show();
@@ -104,4 +107,12 @@ ShowForm::~ShowForm()
 void ShowForm::closeEvent(QCloseEvent *event)
 {
     delete this;
+}
+
+void ShowForm::testAddOneRow()
+{
+    const VDouble result = { 0, 0.34033, 0.32715, 0.33252, 0 };
+    addOneRow(m_layer1, result, "123");
+
+    show();
 }
