@@ -41,7 +41,7 @@ VQStr rule2_5   = { "质量因素控制",
                     "质量通病与防治",
                     "成品保护制度"};
 VQStr rule2_6   = { "关键工序控制点",
-                    "资源供应计划编制合理性"
+                    "资源供应计划编制合理性",
                     "工期检查与保证"};
 VQStr rule2_7   = { "安全生产责任与教育",
                     "安全生产控制措施",
@@ -62,8 +62,8 @@ VVQStr rule2    = { rule2_0, rule2_1, rule2_2,
                     rule2_6, rule2_7, rule2_8,
                     rule2_9, rule2_10};
 VQStr  rule1    = { "自然条件", "经济形势", "政策因素",
-                    "施工现场管理", "项目施工技术",
-                    "质量保障", "工期保障", "安全文明生产", "应急管理",
+                    "施工现场管理", "项目施工技术", "质量保障",
+                    "工期保障", "安全文明生产", "应急管理",
                     "监测监控", "应急处置"};
 VQStr  rule0    = { "项目外环境",
                     "项目内环境",
@@ -138,7 +138,7 @@ MainWidget::MainWidget(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    this->setWindowTitle( tr("化工园区生产安全免疫力评估系统") );
+    this->setWindowTitle( tr("工程项目风险识别系统") );
 
     int rule2Idx = 0;
     for( int first=0; first<rule0_Num; ++first )
@@ -170,7 +170,7 @@ QHBoxLayout * MainWidget::newLayout(  int layer )
     QGridLayout* gLayout = new QGridLayout;
     if( layer == 0 )
     {
-        addWeidht( gLayout, "单一权重", 0, layer0);
+        addWeidht( gLayout, "权重", 0, layer0);
     }
     else if( layer == 1 )
     {
@@ -279,6 +279,7 @@ bool MainWidget::checkLineEdit()
 
 void MainWidget::on_pushButton_clicked()
 {
+//    testGetDegree();
     if( ! ui->radioButton->isChecked() )
         if( ! checkLineEdit() )
             return;
@@ -347,7 +348,7 @@ void MainWidget::on_pushButton_clicked()
 
     saveResult( resultPath, resultLayer1, resultLayer0, resultFinal );
 
-    information( "完成", "已保存文件\n请查看" );
+    information( "完成", "已保存文件到当前文件夹\n请查看" );
 }
 
 VDouble MainWidget::getLayerResult( VDouble& oneWeigths, VVDouble & degress, int beginIdx, int num )
@@ -365,6 +366,13 @@ VDouble MainWidget::getLayerResult( VDouble& oneWeigths, VVDouble & degress, int
     return oneResult;
 }
 
+void MainWidget::testGetDegree()
+{
+    double score = 67.5;
+    for( int i=0; i<DegreeSize; ++i )
+        qDebug()<<getDegree( i, score );
+}
+
 double MainWidget::getDegree( int idx, double score )
 {
     if( idx == 0 )
@@ -373,6 +381,8 @@ double MainWidget::getDegree( int idx, double score )
             return 1;
         else if( score >= 60 && score<= 62.5 )
             return (250-4*score)/10;
+        else if( score > 62.5 )
+            return 0;
         else
             return 0;
     }
@@ -384,8 +394,10 @@ double MainWidget::getDegree( int idx, double score )
             return (4*score-240)/10;
         else if( score >= 62.5 && score <= 67.5 )
             return 1;
-        else
+        else if( score > 67.5 && score < 72.5 )
             return (290-4*score)/20;
+        else
+            return 0;
     }
     else if( idx == 2 )
     {
@@ -395,8 +407,10 @@ double MainWidget::getDegree( int idx, double score )
             return (4*score-270)/20;
         else if( score >= 72.5 && score <= 77.5 )
             return 1;
-        else
+        else if( score > 77.5 && score < 82.5 )
             return (330-4*score)/20;
+        else
+            return 0;
     }
     else if( idx == 3 )
     {
@@ -406,8 +420,10 @@ double MainWidget::getDegree( int idx, double score )
             return (4*score-310)/20;
         else if( score >= 82.5 && score <= 87.5 )
             return 1;
-        else
+        else if( score > 87.5 && score < 90 )
             return (360-4*score)/10;
+        else
+            return 0;
     }
 //    else if( idx == 4 )
     else
@@ -416,8 +432,10 @@ double MainWidget::getDegree( int idx, double score )
             return 0;
         else if( score >= 87.5 && score <= 90 )
             return (4*score-350)/10;
-        else
+        else if( score > 90 )
             return 1;
+        else
+            return 0;
     }
 }
 

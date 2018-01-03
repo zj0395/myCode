@@ -12,7 +12,7 @@ Widget::Widget(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    this->setWindowTitle( tr("化工园区生产安全免疫力评估系统") );
+    this->setWindowTitle( tr("工程项目风险识别系统") );
 
     mainWidget = new MainWidget();
 }

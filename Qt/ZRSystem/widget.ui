@@ -140,14 +140,14 @@
        </property>
        <property name="font">
         <font>
-         <pointsize>15</pointsize>
+         <pointsize>20</pointsize>
          <weight>50</weight>
          <bold>false</bold>
          <underline>false</underline>
         </font>
        </property>
        <property name="text">
-        <string>化工园区生产安全免疫力评估系统</string>
+        <string>工程项目风险识别系统</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>

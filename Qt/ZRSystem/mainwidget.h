@@ -52,6 +52,8 @@ private:
     bool checkLineEdit();
     double getDegree(int idx, double score);
     VDouble getLayerResult(VDouble &oneWeigths, VVDouble &degress, int beginIdx, int num);
+
+    void testGetDegree();
 };
 
 #endif // MAINWIDGET_H
