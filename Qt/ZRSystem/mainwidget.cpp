@@ -277,7 +277,7 @@ bool MainWidget::checkLineEdit()
     {
         for( int j=0; j<rule2[rule2Idx].size(); ++j )
         {
-            QString end = QString("%1R%2-%3").arg(rule2[rule2Idx][j] ).arg(rule2Idx+1).arg(j+1);
+            QString end = QString("%1%2-%3").arg(rule2[rule2Idx][j] ).arg( getIdx(rule2Idx) ).arg(j+1);
             for( int i=0; i<3; ++i )
                 CHECK_1( layer2[allIdx*3+i], i, end);
             CHECK_0( score2[allIdx], QString("%1 得分为空").arg(end) );
