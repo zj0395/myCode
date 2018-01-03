@@ -129,6 +129,11 @@ inline void myOpenFileIn(ifstream & fs, const QString & filePath)
 #endif
 
 
+/**
+ * @brief save1DResult  单个数组保存到文件
+ * @param fout          文件的表示符
+ * @param data          数组
+ */
 static void save1DResult( ofstream& fout, const VDouble& data )
 {
     using namespace std;
@@ -139,6 +144,13 @@ static void save1DResult( ofstream& fout, const VDouble& data )
     fout<<"\n";
 }
 
+/**
+ * @brief MainWidget::saveResult    所有结果保存成文件
+ * @param str                       文件的名字
+ * @param layer1                    第二层的计算结果
+ * @param layer0                    第一层的计算结果
+ * @param final                     最终结果
+ */
 void MainWidget::saveResult( QString str, const VVDouble& layer1, const VVDouble & layer0, const VDouble & final )
 {
     ofstream fout;
@@ -176,17 +188,20 @@ MainWidget::MainWidget(QWidget *parent) :
     int rule2Idx = 0;
     for( int first=0; first<rule0_Num; ++first )
     {
+        //第一层的选项卡窗口
         ui->tabWidget1->setCurrentIndex( first );
         QWidget * nowTab = ui->tabWidget1->currentWidget();
         QGridLayout * gLayout = new QGridLayout(nowTab);
 
         gLayout->addLayout( newLayout( 0 ), 0, 0 );
 
+        //第二层的选项卡窗口
         QTabWidget * tabWidget = new QTabWidget();
 
         for( int second =0; second<rule1_Num[first]; ++second )
         {
-            tabWidget->addTab( addLayoutToWidget( rule2[rule2Idx] ), rule1[rule2Idx] ) ;
+            //第三层的选项卡窗口
+            tabWidget->addTab( newChildWidget( rule2[rule2Idx] ), rule1[rule2Idx] ) ;
             ++rule2Idx;
         }
         QGridLayout * gLayout2 = new QGridLayout(tabWidget);
@@ -199,31 +214,43 @@ MainWidget::MainWidget(QWidget *parent) :
     ui->tabWidget1->setCurrentIndex( 0 );
 }
 
+/**
+ * @brief MainWidget::newLayout
+ * @param layer                 层号, 取值 0-2
+ * @return                      返回一个水平布局
+ */
 QHBoxLayout * MainWidget::newLayout(  int layer )
 {
     QHBoxLayout* hLayout = new QHBoxLayout;
     QGridLayout* gLayout = new QGridLayout;
-    if( layer == 0 )
+    if( layer == 0 )//第一层
     {
         addWeidht( gLayout, "权重", 0, layer0);
     }
-    else if( layer == 1 )
+    else if( layer == 1 )//第二层
     {
         addWeidht( gLayout, "单一权重", 0, layer1 );
         addWeidht( gLayout, "复合权重", 1, layer1 );
     }
-    else if( layer == 2 )
+    else if( layer == 2 )//第三层
     {
         addWeidht( gLayout, "单一权重",  0, layer2 );
         addWeidht( gLayout, "复合权重A", 1, layer2 );
         addWeidht( gLayout, "复合权重B", 2, layer2 );
-        addWeidht( gLayout, "得分",    3, score2 );
+        addWeidht( gLayout, "得分",     3, score2 );
     }
     hLayout->addLayout( gLayout );
 
     return hLayout;
 }
 
+/**
+ * @brief MainWidget::addWeidht 生成输入框
+ * @param gLayout               父窗口的布局
+ * @param str                   权重或者得分
+ * @param row                   位于布局的第几行
+ * @param layer                 把输入框放置到该数组
+ */
 void MainWidget::addWeidht(QGridLayout* gLayout, QString str, int row, VLineEdit &layer)
 {
     QLabel * label = new QLabel( str );
@@ -234,7 +261,12 @@ void MainWidget::addWeidht(QGridLayout* gLayout, QString str, int row, VLineEdit
     layer.push_back( edit );
 }
 
-QWidget* MainWidget::addLayoutToWidget(  const VQStr & content)
+/**
+ * @brief MainWidget::newChildWidget    第三层的选项卡窗口
+ * @param content                       单个要素层下的所有指标
+ * @return                              返回值是该层所有指标组成的窗口
+ */
+QWidget* MainWidget::newChildWidget(  const VQStr & content)
 {
     QWidget * Widget = new QTabWidget();
     QGridLayout * layout = new QGridLayout(Widget);
@@ -259,6 +291,8 @@ MainWidget::~MainWidget()
     delete ui;
 }
 
+//检查输入框是否为空
+//前两层没有用到，所以注释掉了检查的代码
 bool MainWidget::checkLineEdit()
 {
 //    for( int i=0; i<layer0.size(); ++i )
@@ -291,15 +325,20 @@ bool MainWidget::checkLineEdit()
 void MainWidget::on_pushButton_clicked()
 {
 //    testGetDegree();
+
+    //未选择 空白视为0 则进行检查
+    //检查结果为 false, 说明有错误, 就返回
     if( ! ui->radioButton->isChecked() )
         if( ! checkLineEdit() )
             return;
 
-    VVDouble degrees;//所有指标层的分数隶属度
-    VDouble  oneWeights;//所有指标层的单一权重
-    VDouble  comWeightA;//所有指标层的复合权重A
-    VDouble  comWeightB;//所有指标层的复合权重B
+    //下4个数组均按顺序排列
+    VVDouble degrees;//所有指标层的分数隶属度, 二维
+    VDouble  oneWeights;//所有指标层的单一权重, 一维
+    VDouble  comWeightA;//所有指标层的复合权重A, 一维
+    VDouble  comWeightB;//所有指标层的复合权重B, 一维
 
+    //从输入框中获取所有得分
     for( int i=0; i<score2.size(); ++i )
     {
         VDouble degree( DegreeSize, 0 );
@@ -310,6 +349,7 @@ void MainWidget::on_pushButton_clicked()
         degrees.push_back( degree );
     }
 
+    //从输入框中获取所有权重
     int allIdx = 0;
     for( int rule2Idx =0; rule2Idx<rule2.size(); ++rule2Idx )
     {
@@ -355,20 +395,35 @@ void MainWidget::on_pushButton_clicked()
     VDouble resultFinal = getLayerResult( comWeightB, degrees, 0, degrees.size() );
 
 
+    //保存到文件
     QString resultPath = QDir::currentPath() + "/result.txt" ;
-
     saveResult( resultPath, resultLayer1, resultLayer0, resultFinal );
+
+    //显示到窗口
     showResult( resultLayer1, resultLayer0, resultFinal );
 
 //    information( "完成", "已保存文件到当前文件夹\n请查看" );
 }
 
+
 void MainWidget::showResult(const VVDouble &layer1, const VVDouble &layer0, const VDouble &final)
 {
+    //ShowForm 是用来显示的窗口
     ShowForm * form = new ShowForm;
+
+    //把结果传过去
     form->setModelData( this->pos(), layer1, layer0, final );
 }
 
+
+/**
+ * @brief getLayerResult 进行矩阵相乘
+ * @param oneWeigths     权重的数组
+ * @param degress        所有隶属度数组
+ * @param beginIdx       两个数组的索引
+ * @param num            从索引开始，使用的个数
+ * @return               返回值是数组相乘所得矩阵, 大小固定 1*5
+ */
 VDouble MainWidget::getLayerResult( VDouble& oneWeigths, VVDouble & degress, int beginIdx, int num )
 {
     VDouble oneResult;
@@ -384,6 +439,7 @@ VDouble MainWidget::getLayerResult( VDouble& oneWeigths, VVDouble & degress, int
     return oneResult;
 }
 
+//测试函数，不用管
 void MainWidget::testGetDegree()
 {
     double score = 67.5;
@@ -391,6 +447,7 @@ void MainWidget::testGetDegree()
         qDebug()<<getDegree( i, score );
 }
 
+//读取 ini 配置文件，未使用，不用管
 void MainWidget::readIniFile()
 {
     QString iniPath = QDir::currentPath() + "/config.ini" ;
@@ -419,6 +476,12 @@ void MainWidget::readIniFile()
     }
 }
 
+/**
+ * @brief MainWidget::getDegree
+ * @param idx                   序号, 取值 0-4
+ * @param score                 得分
+ * @return                      返回值为隶属度
+ */
 double MainWidget::getDegree( int idx, double score )
 {
     if( idx == 0 )
@@ -434,7 +497,7 @@ double MainWidget::getDegree( int idx, double score )
     }
     else if( idx == 1 )
     {
-        if( score < 60 || score > 72.5)//TODO 60
+        if( score < 60 || score > 72.5)
             return 0;
         else if( score > 60 && score < 62.5 )
             return (4*score-240)/10;
@@ -447,7 +510,7 @@ double MainWidget::getDegree( int idx, double score )
     }
     else if( idx == 2 )
     {
-        if( score < 67.5 || score > 82.5)//TODO 67.5
+        if( score < 67.5 || score > 82.5)
             return 0;
         else if( score > 67.5 && score< 72.5 )
             return (4*score-270)/20;
@@ -460,7 +523,7 @@ double MainWidget::getDegree( int idx, double score )
     }
     else if( idx == 3 )
     {
-        if( score < 77.5 || score > 90)//TODO 77.5
+        if( score < 77.5 || score > 90)
             return 0;
         else if( score > 77.5 && score < 82.5 )
             return (4*score-310)/20;
@@ -485,6 +548,7 @@ double MainWidget::getDegree( int idx, double score )
     }
 }
 
+//提示对话框
 void MainWidget::information( QString title, QString content )
 {
     QMessageBox::information( this, title, content );
