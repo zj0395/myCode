@@ -47,3 +47,8 @@ void Widget::on_pushButton_clicked()
     mainWidget->move( centerX, centerY );
     mainWidget->show();
 }
+
+void Widget::on_pushButton_2_clicked()
+{
+    exit(0);
+}

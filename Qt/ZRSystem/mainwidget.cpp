@@ -111,19 +111,21 @@ static void saveResult( QString str, const VVDouble& layer1, const VVDouble & la
     ofstream fout;
     myOpenFileOut( fout, str );
 
-    fout<<"要素层结果:\n";
+    fout.setf( std::ios::showbase| std::ios::left);
+
+    fout<<"\n要素层结果:\n";
     for( int i=0; i<layer1.size(); ++i )
     {
         save1DResult( fout, layer1[i] );
     }
 
-    fout<<"准则层结果:\n";
+    fout<<"\n准则层结果:\n";
     for( int i=0; i<layer0.size(); ++i )
     {
         save1DResult( fout, layer0[i] );
     }
 
-    fout<<"最终结果:\n";
+    fout<<"\n最终结果:\n";
     save1DResult( fout, final );
 
     fout.close();
@@ -311,7 +313,7 @@ void MainWidget::on_pushButton_clicked()
     VVDouble resultLayer1;
     for( int rule2Idx =0; rule2Idx<rule2.size(); ++rule2Idx )
     {
-        resultLayer1.push_back( getLayerResult( oneWeights, degrees, allIdx, rule2.size() ) );
+        resultLayer1.push_back( getLayerResult( oneWeights, degrees, allIdx, rule2[rule2Idx].size() ) );
         allIdx += rule2[rule2Idx].size();
     }
 
