@@ -1,8 +1,10 @@
-#include "widget.h"
+﻿#include "widget.h"
 #include "ui_widget.h"
 #include "mainwidget.h"
 #include <QDebug>
 #include <QDesktopWidget>
+
+# pragma execution_character_set("utf-8")//可以使用中文
 
 Widget::Widget(QWidget *parent) :
     QWidget(parent),

@@ -1,4 +1,4 @@
-#include "mainwidget.h"
+﻿#include "mainwidget.h"
 #include "ui_mainwidget.h"
 #include <QHBoxLayout>
 #include <QMessageBox>
@@ -6,8 +6,15 @@
 #include <QLineEdit>
 #include <QDebug>
 #include <QSpacerItem>
+#include <fstream>
+#include <QDir>
+#include <iomanip>
+
+using std::ofstream;
+using std::ifstream;
 
 
+# pragma execution_character_set("utf-8")//可以使用中文
 
 int   rule0_Num = 4;
 VInt  rule1_Num = {3, 2, 4, 2 };
@@ -64,6 +71,63 @@ VQStr  rule0    = { "项目外环境",
                     "事故状态的应急"};
 
 
+const int DegreeSize = 5;//隶属度的个数
+
+#ifdef Q_OS_LINUX
+inline void myOpenFileOut(ofstream & fs, const QString & filePath)
+{
+    fs.open( filePath.toStdString().c_str(), ios::out|ios::trunc );
+}
+inline void myOpenFileIn(ifstream & fs, QString & filePath)
+{
+    fs.open( filePath.toStdString().c_str(), ios::in );
+}
+#else
+#ifdef Q_OS_WIN
+inline void myOpenFileOut(ofstream & fs, const QString & filePath)
+{
+    fs.open( filePath.toStdWString().c_str(), std::ios::out|std::ios::trunc );
+}
+inline void myOpenFileIn(ifstream & fs, const QString & filePath)
+{
+    fs.open( filePath.toStdWString().c_str(), std::ios::in );
+}
+#endif
+#endif
+
+
+static void save1DResult( ofstream& fout, const VDouble& data )
+{
+    using namespace std;
+    for( int i=0; i<data.size(); ++i )
+    {
+        fout<<setw(10)<<setprecision(7)<<data[i]<<"  ";
+    }
+    fout<<"\n";
+}
+
+static void saveResult( QString str, const VVDouble& layer1, const VVDouble & layer0, const VDouble & final )
+{
+    ofstream fout;
+    myOpenFileOut( fout, str );
+
+    fout<<"要素层结果:\n";
+    for( int i=0; i<layer1.size(); ++i )
+    {
+        save1DResult( fout, layer1[i] );
+    }
+
+    fout<<"准则层结果:\n";
+    for( int i=0; i<layer0.size(); ++i )
+    {
+        save1DResult( fout, layer0[i] );
+    }
+
+    fout<<"最终结果:\n";
+    save1DResult( fout, final );
+
+    fout.close();
+}
 
 
 MainWidget::MainWidget(QWidget *parent) :
@@ -183,17 +247,17 @@ MainWidget::~MainWidget()
 
 bool MainWidget::checkLineEdit()
 {
-    for( int i=0; i<layer0.size(); ++i )
-    {
-        CHECK_0( layer0[i], QString("%1 权重为空").arg(rule0[i]) );
-    }
+//    for( int i=0; i<layer0.size(); ++i )
+//    {
+//        CHECK_0( layer0[i], QString("%1 权重为空").arg(rule0[i]) );
+//    }
 
-    for( int i=0; i<layer1.size(); ++i )
-    {
-        //奇数符合，偶数单一
-        CHECK_0( layer1[i],  QString("%1 %2 权重为空").arg(rule1[i/2])
-                                .arg( i%2 ? "复合" : "单一" ) );
-    }
+//    for( int i=0; i<layer1.size(); ++i )
+//    {
+//        //奇数符合，偶数单一
+//        CHECK_0( layer1[i],  QString("%1 %2 权重为空").arg(rule1[i/2])
+//                                .arg( i%2 ? "复合" : "单一" ) );
+//    }
 
     int allIdx = 0;
     for( int rule2Idx =0; rule2Idx<rule2.size(); ++rule2Idx )
@@ -214,15 +278,10 @@ void MainWidget::on_pushButton_clicked()
 //    if( ! checkLineEdit() )
 //        return;
 
-    typedef std::vector<double>  VDouble;
-    typedef std::vector<VDouble> VVDouble;
-
     VVDouble degrees;//所有指标层的分数隶属度
     VDouble  oneWeights;//所有指标层的单一权重
     VDouble  comWeightA;//所有指标层的复合权重A
     VDouble  comWeightB;//所有指标层的复合权重B
-
-    const int DegreeSize = 5;
 
     for( int i=0; i<score2.size(); ++i )
     {
@@ -245,6 +304,60 @@ void MainWidget::on_pushButton_clicked()
             ++allIdx;
         }
     }
+
+
+    allIdx = 0;
+    //要素层计算
+    VVDouble resultLayer1;
+    for( int rule2Idx =0; rule2Idx<rule2.size(); ++rule2Idx )
+    {
+        resultLayer1.push_back( getLayerResult( oneWeights, degrees, allIdx, rule2.size() ) );
+        allIdx += rule2[rule2Idx].size();
+    }
+
+
+    allIdx = 0;
+    int rule2Idx = 0;
+    //准则层计算
+    VVDouble resultLayer0;
+    for( int rule0Idx =0; rule0Idx<rule0_Num; ++rule0Idx )
+    {
+        int rule1NowNum = 0;
+
+        for( int second = 0; second<rule1_Num[rule0Idx]; ++second )
+        {
+            for( int third = 0; third<rule2[rule2Idx].size(); ++third )
+                ++rule1NowNum;
+            ++rule2Idx;
+        }
+        resultLayer0.push_back( getLayerResult( comWeightA, degrees, allIdx, rule1NowNum ) );
+        allIdx += rule1NowNum;
+    }
+
+    //最终结果计算
+    VDouble resultFinal = getLayerResult( comWeightB, degrees, 0, degrees.size() );
+
+
+    QString resultPath = QDir::currentPath() + "/result.txt" ;
+
+    saveResult( resultPath, resultLayer1, resultLayer0, resultFinal );
+
+    information( "完成", "已保存文件\n请查看" );
+}
+
+VDouble MainWidget::getLayerResult( VDouble& oneWeigths, VVDouble & degress, int beginIdx, int num )
+{
+    VDouble oneResult;
+    for( int j=0; j<DegreeSize; ++j )
+    {
+        double ret = 0;
+        for( int i=0; i<num; ++i )
+        {
+            ret +=  oneWeigths[ beginIdx+i ] * degress[ beginIdx+i ][j];
+        }
+        oneResult.push_back( ret );
+    }
+    return oneResult;
 }
 
 double MainWidget::getDegree( int idx, double score )

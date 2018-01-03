@@ -1,4 +1,4 @@
-#ifndef MAINWIDGET_H
+﻿#ifndef MAINWIDGET_H
 #define MAINWIDGET_H
 
 #include <QWidget>
@@ -13,6 +13,9 @@ class QLineEdit;
 
 typedef std::vector<QString> VQStr;   //1D array
 typedef std::vector<VQStr>   VVQStr;  //2D array
+
+typedef std::vector<double>  VDouble;
+typedef std::vector<VDouble> VVDouble;
 
 typedef std::vector<int>     VInt;
 typedef std::vector< QLineEdit* > VLineEdit;
@@ -48,6 +51,7 @@ private:
 
     bool checkLineEdit();
     double getDegree(int idx, double score);
+    VDouble getLayerResult(VDouble &oneWeigths, VVDouble &degress, int beginIdx, int num);
 };
 
 #endif // MAINWIDGET_H
