@@ -9,6 +9,8 @@
 #include <fstream>
 #include <QDir>
 #include <iomanip>
+#include <QSettings>
+#include "showform.h"
 
 using std::ofstream;
 using std::ifstream;
@@ -17,6 +19,8 @@ using std::ifstream;
 # pragma execution_character_set("utf-8")//可以使用中文
 
 int   rule0_Num = 4;
+
+extern const
 VInt  rule1_Num = {3, 2, 4, 2 };
 
 VQStr rule2_0   = { "水文、气象状况",
@@ -61,17 +65,20 @@ VVQStr rule2    = { rule2_0, rule2_1, rule2_2,
                     rule2_3, rule2_4, rule2_5,
                     rule2_6, rule2_7, rule2_8,
                     rule2_9, rule2_10};
+extern const
 VQStr  rule1    = { "自然条件", "经济形势", "政策因素",
                     "施工现场管理", "项目施工技术", "质量保障",
                     "工期保障", "安全文明生产", "应急管理",
                     "监测监控", "应急处置"};
+extern const
 VQStr  rule0    = { "项目外环境",
                     "项目内环境",
                     "非事故状态的稳定",
                     "事故状态的应急"};
 
 
-const int DegreeSize = 5;//隶属度的个数
+extern const int DegreeSize;//隶属度的个数
+extern QString getIdx( int layer1Idx );
 
 #ifdef __GNUC__
 inline void myOpenFileOut(ofstream & fs, const QString & filePath)
@@ -106,14 +113,14 @@ static void save1DResult( ofstream& fout, const VDouble& data )
     fout<<"\n";
 }
 
-static void saveResult( QString str, const VVDouble& layer1, const VVDouble & layer0, const VDouble & final )
+void MainWidget::saveResult( QString str, const VVDouble& layer1, const VVDouble & layer0, const VDouble & final )
 {
     ofstream fout;
     myOpenFileOut( fout, str );
 
     fout.setf( std::ios::showbase| std::ios::left);
 
-    fout<<"\n要素层结果:\n";
+    fout<<"要素层结果:\n";
     for( int i=0; i<layer1.size(); ++i )
     {
         save1DResult( fout, layer1[i] );
@@ -125,7 +132,7 @@ static void saveResult( QString str, const VVDouble& layer1, const VVDouble & la
         save1DResult( fout, layer0[i] );
     }
 
-    fout<<"\n最终结果:\n";
+    fout<<"\n目标层结果:\n";
     save1DResult( fout, final );
 
     fout.close();
@@ -160,6 +167,8 @@ MainWidget::MainWidget(QWidget *parent) :
 
         gLayout->addWidget( tabWidget );
     }
+
+    readIniFile();
 
     ui->tabWidget1->setCurrentIndex( 0 );
 }
@@ -268,9 +277,10 @@ bool MainWidget::checkLineEdit()
     {
         for( int j=0; j<rule2[rule2Idx].size(); ++j )
         {
+            QString end = QString("%1R%2-%3").arg(rule2[rule2Idx][j] ).arg(rule2Idx+1).arg(j+1);
             for( int i=0; i<3; ++i )
-                CHECK_1( layer2[allIdx*3+i], i, rule2[rule2Idx][j] );
-            CHECK_0( score2[allIdx], QString("%1 得分为空").arg(rule2[rule2Idx][j]) );
+                CHECK_1( layer2[allIdx*3+i], i, end);
+            CHECK_0( score2[allIdx], QString("%1 得分为空").arg(end) );
             ++allIdx;
         }
     }
@@ -347,8 +357,15 @@ void MainWidget::on_pushButton_clicked()
     QString resultPath = QDir::currentPath() + "/result.txt" ;
 
     saveResult( resultPath, resultLayer1, resultLayer0, resultFinal );
+    showResult( resultLayer1, resultLayer0, resultFinal );
 
-    information( "完成", "已保存文件到当前文件夹\n请查看" );
+//    information( "完成", "已保存文件到当前文件夹\n请查看" );
+}
+
+void MainWidget::showResult(const VVDouble &layer1, const VVDouble &layer0, const VDouble &final)
+{
+    ShowForm * form = new ShowForm;
+    form->setModelData( this->pos(), layer1, layer0, final );
 }
 
 VDouble MainWidget::getLayerResult( VDouble& oneWeigths, VVDouble & degress, int beginIdx, int num )
@@ -371,6 +388,34 @@ void MainWidget::testGetDegree()
     double score = 67.5;
     for( int i=0; i<DegreeSize; ++i )
         qDebug()<<getDegree( i, score );
+}
+
+void MainWidget::readIniFile()
+{
+    QString iniPath = QDir::currentPath() + "/config.ini" ;
+    if( !QFileInfo(iniPath).exists() )
+        return;
+
+    QSettings  iniReader ( iniPath, QSettings::IniFormat);
+
+    qDebug()<<iniReader.value( "/气象状况/单一权重" ).toString();
+    const QString weightStr[3] = {"/单一权重", "/复合权重A", "/复合权重B"};
+    const QString scoreStr     = "得分";
+    int allIdx = 0;
+    for( int rule2Idx =0; rule2Idx<rule2.size(); ++rule2Idx )
+    {
+        for( int j=0; j<rule2[rule2Idx].size(); ++j )
+        {
+            for( int i=0; i<3; ++i )
+            {
+                QString iniStr = "/" + rule2[rule2Idx][j] + weightStr[i];
+                layer2[allIdx*3+i]->setText( iniReader.value(iniStr).toString() );
+            }
+            QString iniStr = "/" + rule2[rule2Idx][j] + scoreStr;
+            score2[allIdx]->setText( iniReader.value(iniStr).toString() );
+            ++allIdx;
+        }
+    }
 }
 
 double MainWidget::getDegree( int idx, double score )

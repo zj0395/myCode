@@ -49,11 +49,16 @@ private:
 
     void information(QString title, QString content);
 
+
     bool checkLineEdit();
     double getDegree(int idx, double score);
     VDouble getLayerResult(VDouble &oneWeigths, VVDouble &degress, int beginIdx, int num);
 
     void testGetDegree();
+    void readIniFile();
+
+    void saveResult(QString str, const VVDouble &layer1, const VVDouble &layer0, const VDouble &final);
+    void showResult(const VVDouble &layer1, const VVDouble &layer0, const VDouble &final);
 };
 
 #endif // MAINWIDGET_H
