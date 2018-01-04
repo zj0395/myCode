@@ -36,47 +36,47 @@ int main(int argc, char *argv[])
     int size2 = siz;
 
     //Armadillo库
-//    arma::mat A( size1, size2 );
-//    for( int i=0; i<size1; ++i )
-//    {
-//        for( int j=0; j<size2; ++j )
-//            A(i,j) = ss[j*size1+i];
-//    }
-
-//    arma::mat U, V;
-//    arma::colvec S;
-//    svd( U, S, V, A );
-////    A.print("原矩阵A:");
-////    U.print("正交矩阵U=\n");
-////    V.print("正交矩阵V=\n");
-////    S.print("奇异值列向量S=\n");
-//    arma::mat VM ( size1, size2 );
-//    for( int i=0; i<size1; ++i )
-//    {
-//        for( int i=0; i<size1; ++i )
-//        {
-//            for( int j=0; j<size2; ++j )
-//                VM(i,j) = 0;
-//        }
-//        VM(i, i) = S[i];
-//    }
-//    std::cout<<norm( (U * VM * V.t() - A), 2 )<<std::endl;
-
-
-    //Eigen库
-    Eigen::MatrixXd mat2D( size1, size2 );
+    arma::mat A( size1, size2 );
     for( int i=0; i<size1; ++i )
     {
         for( int j=0; j<size2; ++j )
-            mat2D(i, j) = ss[j*size1+i];
+            A(i,j) = ss[j*size1+i];
     }
-    Eigen::JacobiSVD<Eigen::MatrixXd> svd( mat2D, Eigen::ComputeFullU | Eigen::ComputeFullV );
-    Eigen::MatrixXd V = svd.matrixV();
-    Eigen::VectorXd S = svd.singularValues();
-    Eigen::MatrixXd U = svd.matrixU();
 
-    std::cout<<(U * S.asDiagonal() * V.transpose() - mat2D).norm()<<std::endl;
+    arma::mat U, V;
+    arma::colvec S;
+    svd( U, S, V, A );
+//    A.print("原矩阵A:");
+//    U.print("正交矩阵U=\n");
+//    V.print("正交矩阵V=\n");
+//    S.print("奇异值列向量S=\n");
+    arma::mat VM ( size1, size2 );
+    for( int i=0; i<size1; ++i )
+    {
+        for( int i=0; i<size1; ++i )
+        {
+            for( int j=0; j<size2; ++j )
+                VM(i,j) = 0;
+        }
+        VM(i, i) = S[i];
+    }
+    std::cout<<norm( (U * VM * V.t() - A), 2 )<<std::endl;
 
 
-    return a.exec();
+    //Eigen库
+//    Eigen::MatrixXd mat2D( size1, size2 );
+//    for( int i=0; i<size1; ++i )
+//    {
+//        for( int j=0; j<size2; ++j )
+//            mat2D(i, j) = ss[j*size1+i];
+//    }
+//    Eigen::JacobiSVD<Eigen::MatrixXd> svd( mat2D, Eigen::ComputeFullU | Eigen::ComputeFullV );
+//    Eigen::MatrixXd V = svd.matrixV();
+//    Eigen::VectorXd S = svd.singularValues();
+//    Eigen::MatrixXd U = svd.matrixU();
+
+//    std::cout<<(U * S.asDiagonal() * V.transpose() - mat2D).norm()<<std::endl;
+
+
+    return 0;
 }
