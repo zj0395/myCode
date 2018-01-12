@@ -42,7 +42,7 @@ private:
     void doCalculate();
     bool checkEmpty();
 
-    void showResult(const VDouble &result, const VDouble &inputResult);
+    void showResult(const VDouble &result, const VQString &inputResult);
 };
 
 class ShowWidget : public QTableWidget
@@ -50,7 +50,7 @@ class ShowWidget : public QTableWidget
     Q_OBJECT
 
 public:
-    explicit ShowWidget(const VDouble & result, const VDouble & inputResult);
+    explicit ShowWidget(const VDouble & result, const VQString & inputResult);
     ~ShowWidget();
 
     void closeEvent(QCloseEvent *event);

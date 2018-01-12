@@ -147,7 +147,7 @@
         </font>
        </property>
        <property name="text">
-        <string>工程项目风险识别系统</string>
+        <string>工程风险预防方案选择系统</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>

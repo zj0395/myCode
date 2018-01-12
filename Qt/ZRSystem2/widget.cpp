@@ -12,7 +12,7 @@ Widget::Widget(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    this->setWindowTitle( tr("工程项目风险识别系统") );
+    this->setWindowTitle( tr("工程风险预防方案选择系统") );
 
     mainWidget = new Form_MainWidget;
 }
@@ -22,14 +22,10 @@ Widget::~Widget()
     delete ui;
 }
 
-void Widget::on_pushButton_clicked()
+void moveWidget( QWidget * widget, QPoint nowPos )
 {
-    QPoint nowPos = this->pos();
-
     int centerX = nowPos.x();
     int centerY = nowPos.y();
-
-    this->close();
 
     QDesktopWidget *deskWgt = QApplication::desktop();
     if (deskWgt)
@@ -37,14 +33,23 @@ void Widget::on_pushButton_clicked()
         int virtualWidth  = deskWgt->width();
         int virtualHeight = deskWgt->height();
 
-        int width         = mainWidget->width();
-        int height        = mainWidget->height();
+        int width         = widget->width();
+        int height        = widget->height();
 
         centerX = centerX + width  > virtualWidth  ? virtualWidth  - width  : centerX;
         centerY = centerY + height > virtualHeight ? virtualHeight - height : centerY;
     }
 
-    mainWidget->move( centerX, centerY );
+    widget->move( centerX, centerY );
+}
+
+void Widget::on_pushButton_clicked()
+{
+    QPoint nowPos = this->pos();
+
+    this->close();
+
+    moveWidget( mainWidget, nowPos );
     mainWidget->show();
 }
 

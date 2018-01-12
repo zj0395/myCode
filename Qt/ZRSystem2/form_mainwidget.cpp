@@ -26,6 +26,9 @@ const VQString show2Str = { "预防成本",
                             "质量影响"
                           };
 
+
+extern void moveWidget( QWidget * widget, QPoint pos );
+
 QLabel* newLabel(QString str)
 {
     QLabel * label = new QLabel(str);
@@ -61,8 +64,8 @@ Form_MainWidget::Form_MainWidget(QWidget *parent) :
 {
     this->setWindowTitle( "工程风险预防方案选择系统" );
 
-    mainWidget.addTab(  getFirstWidget(), "总设置");
-    mainWidget.addTab(  getPlanWidget(),  "方案选择");
+    mainWidget.addTab(  getFirstWidget(), "风险事件");
+    mainWidget.addTab(  getPlanWidget(),  "预防方案");
 
 
     QHBoxLayout * vlayout  = new QHBoxLayout;
@@ -99,16 +102,13 @@ QWidget* Form_MainWidget::getFirstWidget()
     QWidget * widget = new QWidget;
     QGridLayout * layout = new QGridLayout( widget );
 
-    QLabel * label1 = newLabel("风险事件");
-    label1->setMaximumHeight( 30 );
-    layout->addWidget( label1, 0, 1 );
     for( int j=0; j<show1Str.size(); ++j )
     {
         QLabel   * label   = newLabel(show1Str[j]);
         QLineEdit* lienA   = newLineEdit();
 
-        layout->addWidget( label, j+1, 0 );
-        layout->addWidget( lienA, j+1, 1 );
+        layout->addWidget( label, j, 0 );
+        layout->addWidget( lienA, j, 1 );
 
         edits[0].push_back(   lienA );
     }
@@ -217,19 +217,20 @@ void Form_MainWidget::doCalculate()
     }
 
     //输入的三个评价结果
-    VDouble inputResult;
+    VQString inputResult;
     for( int i=0; i<editsResult.size(); ++i )
     {
-        inputResult.push_back( editsResult[i]->text().toDouble() );
+        inputResult.push_back( editsResult[i]->text() );
     }
 
 
     showResult( result, inputResult );
 }
 
-void Form_MainWidget::showResult( const VDouble & result, const VDouble & inputResult )
+void Form_MainWidget::showResult( const VDouble & result, const VQString & inputResult )
 {
     ShowWidget* showWidget = new ShowWidget(result, inputResult);
+    moveWidget( showWidget, this->pos()-QPoint(40, -40) );
     showWidget->show();
 }
 
@@ -291,14 +292,14 @@ Form_MainWidget::~Form_MainWidget()
 {
 }
 
-QTableWidgetItem* newTableItem( double num )
+QTableWidgetItem* newTableItem( QString str )
 {
-    QTableWidgetItem * item = new QTableWidgetItem( QString::number( num ) );
+    QTableWidgetItem * item = new QTableWidgetItem( str );
     item->setTextAlignment(Qt::AlignCenter);
     return item;
 }
 
-ShowWidget::ShowWidget(const VDouble &result, const VDouble &inputResult) : myId( allID++ )
+ShowWidget::ShowWidget(const VDouble &result, const VQString &inputResult) : myId( allID++ )
 {
     this->setRowCount( 3 );
     this->setColumnCount( 2 );
@@ -319,9 +320,12 @@ ShowWidget::ShowWidget(const VDouble &result, const VDouble &inputResult) : myId
 
     for( int i=0; i<result.size(); ++i )
     {
-        this->setItem( i, 0, newTableItem( result[i]      ) );
+        this->setItem( i, 0, newTableItem( QString::number( result[i] ) ) );
         this->setItem( i, 1, newTableItem( inputResult[i] ) );
     }
+
+    this->setMinimumSize( 300, 120 );
+    resize( 500, 150 );
 }
 
 ShowWidget::~ShowWidget()
