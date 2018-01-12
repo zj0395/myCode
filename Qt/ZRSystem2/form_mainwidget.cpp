@@ -75,7 +75,7 @@ Form_MainWidget::Form_MainWidget(QWidget *parent) :
     connect( ratioBut, &QPushButton::clicked,
              [=](bool sta)
     {
-        b_checkEmptyLine = sta;
+        b_checkEmptyLine = !sta;
     });
     connect( buttonDo, &QPushButton::clicked,
              [=]()
@@ -291,6 +291,13 @@ Form_MainWidget::~Form_MainWidget()
 {
 }
 
+QTableWidgetItem* newTableItem( double num )
+{
+    QTableWidgetItem * item = new QTableWidgetItem( QString::number( num ) );
+    item->setTextAlignment(Qt::AlignCenter);
+    return item;
+}
+
 ShowWidget::ShowWidget(const VDouble &result, const VDouble &inputResult) : myId( allID++ )
 {
     this->setRowCount( 3 );
@@ -312,8 +319,8 @@ ShowWidget::ShowWidget(const VDouble &result, const VDouble &inputResult) : myId
 
     for( int i=0; i<result.size(); ++i )
     {
-        this->setItem( i, 0, new QTableWidgetItem( QString::number( result[i] ) ) );
-        this->setItem( i, 1, new QTableWidgetItem( QString::number( inputResult[i] ) ) );
+        this->setItem( i, 0, newTableItem( result[i]      ) );
+        this->setItem( i, 1, newTableItem( inputResult[i] ) );
     }
 }
 
