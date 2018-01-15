@@ -6,6 +6,10 @@
 
 # pragma execution_character_set("utf-8")//可以使用中文
 
+/**
+ * 该文件为启动窗口
+ */
+
 Widget::Widget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Widget)

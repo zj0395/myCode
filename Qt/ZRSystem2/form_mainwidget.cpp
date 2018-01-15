@@ -1,4 +1,4 @@
-#include "form_mainwidget.h"
+﻿#include "form_mainwidget.h"
 #include <QGridLayout>
 #include <QStandardItem>
 #include <QLabel>
@@ -14,6 +14,7 @@
 
 int ShowWidget::allID = 1;
 
+//综合评价结果未参与运算，所以不和这些参与运算的一些处理
 const VQString show1Str = { "损失成本",
                             "发生概率",
                             "工期影响",
@@ -27,13 +28,51 @@ const VQString show2Str = { "预防成本",
                           };
 
 
+#define MSG_INFORMATION( str )\
+{\
+    QMessageBox::information( this, tr("错误"), str+" 输入为空" );\
+}
+
+//检查 风险事件 中的输入
+#define CHECK_LINEEDIT_FIRST( lineedit, str )\
+{\
+    if( lineedit->text().isEmpty() )\
+    {\
+        mainWidget.setCurrentIndex( 0 );\
+        MSG_INFORMATION(str);\
+        return false;\
+    }\
+}
+
+//检查 方案 中的输入
+#define CHECK_LINEEDIT_PLAN( lineedit, str, idx )\
+{\
+    if( lineedit->text().isEmpty() )\
+    {\
+        mainWidget.setCurrentIndex( 1 );\
+        planTab.setCurrentIndex( idx );\
+        MSG_INFORMATION(QString("方案%1: ").arg(idx+1)+str);\
+        return false;\
+    }\
+}
+
+//移动窗口，更改显示位置
 extern void moveWidget( QWidget * widget, QPoint pos );
 
 QLabel* newLabel(QString str)
 {
     QLabel * label = new QLabel(str);
+    //居中显示
     label->setAlignment( Qt::AlignCenter );
     return label;
+}
+
+QTableWidgetItem* newTableItem( QString str )
+{
+    QTableWidgetItem * item = new QTableWidgetItem( str );
+    //居中显示
+    item->setTextAlignment(Qt::AlignCenter);
+    return item;
 }
 
 QLineEdit* newLineEdit()
@@ -47,8 +86,16 @@ QLineEdit* newLineEdit()
     return lienWei;
 }
 
+/**
+ * @brief getOneResult  进行计算
+ * @param risks         方案里输入的风险量
+ * @param weights       方案里的权重
+ * @param wholeRisk     全局的设置，即风险事件里的设置
+ * @return
+ */
 double getOneResult( const VDouble& risks, const VDouble& weights, const VDouble & wholeRisk )
 {
+    //以下均为提供的公式
     double tmp0 =  risks[0]*risks[1] - wholeRisk[0] * wholeRisk[1];
     tmp0 = std::pow( tmp0, 2 ) * weights[0];
 
@@ -59,15 +106,19 @@ double getOneResult( const VDouble& risks, const VDouble& weights, const VDouble
 }
 
 
+
 Form_MainWidget::Form_MainWidget(QWidget *parent) :
     QWidget(parent)
 {
     this->setWindowTitle( "工程风险预防方案选择系统" );
 
+    //getFirstWidget 是风险事件的窗口
     mainWidget.addTab(  getFirstWidget(), "风险事件");
+    //getPlanWidget  是方案的窗口
     mainWidget.addTab(  getPlanWidget(),  "预防方案");
 
 
+    //添加一个 单选框 和 一个 开始计算 的按钮
     QHBoxLayout * vlayout  = new QHBoxLayout;
     QRadioButton* ratioBut = new QRadioButton("空行视为0");
     QPushButton * buttonDo = new QPushButton("开始计算");
@@ -75,11 +126,13 @@ Form_MainWidget::Form_MainWidget(QWidget *parent) :
     vlayout->addWidget(ratioBut);
     vlayout->addWidget(buttonDo);
 
+    //点击了是否 空行视为0
     connect( ratioBut, &QPushButton::clicked,
              [=](bool sta)
     {
         b_checkEmptyLine = !sta;
     });
+    //点击了 开始计算
     connect( buttonDo, &QPushButton::clicked,
              [=]()
     {
@@ -87,16 +140,20 @@ Form_MainWidget::Form_MainWidget(QWidget *parent) :
     });
 
 
+    //窗口显示位置
     QGridLayout* layout = new QGridLayout(this);
     layout->addWidget( &mainWidget, 0, 0 );
     layout->addLayout( vlayout, 1, 0 );
 
+    //窗口大小
     resize( 500, 250 );
 
+    //默认 空行 不 视为0
     b_checkEmptyLine = true;
 }
 
 
+//风险事件的窗口
 QWidget* Form_MainWidget::getFirstWidget()
 {
     QWidget * widget = new QWidget;
@@ -122,39 +179,16 @@ QWidget* Form_MainWidget::getFirstWidget()
     return widget;
 }
 
-#define MSG_INFORMATION( str )\
-{\
-    QMessageBox::information( this, tr("错误"), str+" 输入为空" );\
-}
-
-#define CHECK_LINEEDIT_FIRST( lineedit, str )\
-{\
-    if( lineedit->text().isEmpty() )\
-    {\
-        mainWidget.setCurrentIndex( 0 );\
-        MSG_INFORMATION(str);\
-        return false;\
-    }\
-}
-
-#define CHECK_LINEEDIT_PLAN( lineedit, str, idx )\
-{\
-    if( lineedit->text().isEmpty() )\
-    {\
-        mainWidget.setCurrentIndex( 1 );\
-        planTab.setCurrentIndex( idx );\
-        MSG_INFORMATION(QString("方案%1: ").arg(idx+1)+str);\
-        return false;\
-    }\
-}
-
+//检查各个输入框是否为空
 bool Form_MainWidget::checkEmpty()
 {
+    //先检查 总设置，即风险设置
     for( int i=0; i<edits[0].size(); ++i )
     {
         CHECK_LINEEDIT_FIRST(edits[0][i], show1Str[i] );
     }
 
+    //再检查每个方案的 风险量和权重
     for( int planIdx=0; planIdx<PLAN_NUMBER; ++planIdx )
     {
         //风险量和权重
@@ -168,6 +202,7 @@ bool Form_MainWidget::checkEmpty()
         }
     }
 
+    //检查每个方案 最终评价结果的输入
     for( int i=0; i<editsResult.size(); ++i )
     {
         CHECK_LINEEDIT_PLAN( editsResult[i], "最终评价结果", i );
@@ -178,26 +213,32 @@ bool Form_MainWidget::checkEmpty()
 
 void Form_MainWidget::doCalculate()
 {
+    //是否检查空行
     if( b_checkEmptyLine )
     {
+        //如果检查空行，结果是 false，就返回，不进行计算
         if( ! checkEmpty() )
             return;
     }
 
-    //全局设置 A-D
+
+    //通过了检查，现在开始计算
+
+
+    //风险事件的输入，即 A-D
     VDouble wholeRisk;
     for( int i=0; i<edits[0].size(); ++i )
     {
         wholeRisk.push_back( edits[0][i]->text().toDouble() );
     }
 
-    //三个方案的结果
+    //保存三个方案的计算的结果
     VDouble result;
 
     //有三个方案
     for( int planIdx=0; planIdx<PLAN_NUMBER; ++planIdx )
     {
-        //风险量和权重，A1-D1与P1-P4
+        //两个数组，风险量和权重，A1-D1与P1-P3，第一个数组是风险量，第二个数组是权重
         VDouble risksAndWeights[2];
 
         //风险量和权重
@@ -210,13 +251,13 @@ void Form_MainWidget::doCalculate()
             }
         }
 
-        VDouble risks   = risksAndWeights[0];
-        VDouble weights = risksAndWeights[1];
+        //计算该方案的最后结果
+        double onePlanResult  = getOneResult( risksAndWeights[0], risksAndWeights[1], wholeRisk  );
 
-        result.push_back( getOneResult( risks, weights, wholeRisk  ) );
+        result.push_back( onePlanResult );
     }
 
-    //输入的三个评价结果
+    //输入的三个综合评价结果
     VQString inputResult;
     for( int i=0; i<editsResult.size(); ++i )
     {
@@ -224,6 +265,7 @@ void Form_MainWidget::doCalculate()
     }
 
 
+    //显示结果
     showResult( result, inputResult );
 }
 
@@ -234,6 +276,7 @@ void Form_MainWidget::showResult( const VDouble & result, const VQString & input
     showWidget->show();
 }
 
+//获取 预防方案的窗口
 QWidget* Form_MainWidget::getPlanWidget()
 {
     for( int i=0; i<PLAN_NUMBER; ++i )
@@ -249,20 +292,20 @@ QWidget* Form_MainWidget::getPlanWidget()
 
         for( int j=0; j<show2Str.size(); ++j )
         {
-            QLabel   * label   = newLabel(show2Str[j]);
-            QLineEdit* lienA   = newLineEdit();
+            QLabel   * label   = newLabel(show2Str[j]);//显示的标签
+            QLineEdit* lienA   = newLineEdit();//风险量的输入框
 
             w2_layout->addWidget( label,   j+1, 0 );
             w2_layout->addWidget( lienA,   j+1, 1 );
 
             int rowSpan = 1;
-            if( j != 1 )
+            if( j != 1 )//因为第一行与第二行共用一个 权重，所以第二行没有权重的输入框
             {
-                QLineEdit* lienWei = newLineEdit();
+                QLineEdit* lienWei = newLineEdit();//权重的输入框
 
                 if( j == 0 )
                 {
-                    rowSpan = 2;
+                    rowSpan = 2;//因为第一行与第二行共用一个 权重，所以第一个权重占用两行，其它的都是一行
                 }
 
                 w2_layout->addWidget( lienWei, j+1, 2, rowSpan, 1 );
@@ -274,8 +317,12 @@ QWidget* Form_MainWidget::getPlanWidget()
 
         QLabel   * label   = newLabel("综合评价结果");
         QLineEdit* lienResult   = newLineEdit();
+
+        //综合评价结果和它的输入框 放到最后一行
         w2_layout->addWidget( label, show2Str.size()+1, 0 );
+        //占用两列
         w2_layout->addWidget( lienResult, show2Str.size()+1, 1, 1, 2 );
+
         editsResult.push_back(  lienResult );
 
         planTab.addTab( widget, QString("方案%1").arg(i+1) );
@@ -292,13 +339,8 @@ Form_MainWidget::~Form_MainWidget()
 {
 }
 
-QTableWidgetItem* newTableItem( QString str )
-{
-    QTableWidgetItem * item = new QTableWidgetItem( str );
-    item->setTextAlignment(Qt::AlignCenter);
-    return item;
-}
 
+//显示结果的窗口
 ShowWidget::ShowWidget(const VDouble &result, const VQString &inputResult) : myId( allID++ )
 {
     this->setRowCount( 3 );
@@ -307,7 +349,7 @@ ShowWidget::ShowWidget(const VDouble &result, const VQString &inputResult) : myI
     this->setWindowTitle( QString("评价结果%1").arg(myId) );
 
     QStringList titles;
-    titles<<"综合评价结果"<<"评价结果";
+    titles<<"评价结果"<<"综合评价结果";
     this->setHorizontalHeaderLabels( titles );
 
     QStringList headrs;
@@ -320,8 +362,8 @@ ShowWidget::ShowWidget(const VDouble &result, const VQString &inputResult) : myI
 
     for( int i=0; i<result.size(); ++i )
     {
-        this->setItem( i, 0, newTableItem( QString::number( result[i] ) ) );
-        this->setItem( i, 1, newTableItem( inputResult[i] ) );
+        this->setItem( i, 0, newTableItem( inputResult[i] ) );
+        this->setItem( i, 1, newTableItem( QString::number( result[i] ) ) );
     }
 
     this->setMinimumSize( 300, 120 );
