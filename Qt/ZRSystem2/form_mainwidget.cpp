@@ -362,8 +362,8 @@ ShowWidget::ShowWidget(const VDouble &result, const VQString &inputResult) : myI
 
     for( int i=0; i<result.size(); ++i )
     {
-        this->setItem( i, 0, newTableItem( inputResult[i] ) );
-        this->setItem( i, 1, newTableItem( QString::number( result[i] ) ) );
+        this->setItem( i, 0, newTableItem( QString::number( result[i] ) ) );
+        this->setItem( i, 1, newTableItem( inputResult[i] ) );
     }
 
     this->setMinimumSize( 300, 120 );
