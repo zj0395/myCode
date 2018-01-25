@@ -171,7 +171,7 @@ function gitInstall()
     #tmux自动保存和恢复
     mkdir ~/.tmux
     cd ~/.tmux/ && \
-        sudo git clone https://github.com/tmux-plugins/tmux-resurrect.git &&\
+        git clone https://github.com/tmux-plugins/tmux-resurrect.git &&\
         echo "run-shell ~/.tmux/tmux-resurrect/reurrect.tmux" >> ~/.tmux.conf
 }
 
