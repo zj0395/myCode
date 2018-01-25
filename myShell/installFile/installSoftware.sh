@@ -172,7 +172,7 @@ function gitInstall()
     mkdir ~/.tmux
     cd ~/.tmux/ && \
         git clone https://github.com/tmux-plugins/tmux-resurrect.git &&\
-        echo "run-shell ~/.tmux/tmux-resurrect/reurrect.tmux" >> ~/.tmux.conf
+        echo "run-shell ~/.tmux/tmux-resurrect/resurrect.tmux" >> ~/.tmux.conf
 }
 
 function setCnpm()
