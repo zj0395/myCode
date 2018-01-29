@@ -32,3 +32,22 @@ HEADERS += \
 
 FORMS += \
         widget.ui
+
+unix:!macx
+{
+LIBS += -L$$PWD/LIBDIR_gdal_linux/proj/lib/ -lproj
+
+INCLUDEPATH += $$PWD/LIBDIR_gdal_linux/proj/include
+DEPENDPATH += $$PWD/LIBDIR_gdal_linux/proj/include
+
+LIBS += -L$$PWD/LIBDIR_gdal_linux/2.2.1/lib/ -lgdal
+
+INCLUDEPATH += $$PWD/LIBDIR_gdal_linux/2.2.1/include
+DEPENDPATH += $$PWD/LIBDIR_gdal_linux/2.2.1/include
+
+LIBS += -L$$PWD/LIBDIR_gdal_linux/geos/lib/ -lgeos_c
+LIBS += -L$$PWD/LIBDIR_gdal_linux/geos/lib/ -lgeos
+
+INCLUDEPATH += $$PWD/LIBDIR_gdal_linux/geos/include
+DEPENDPATH += $$PWD/LIBDIR_gdal_linux/geos/include
+}

@@ -15,8 +15,22 @@ public:
     explicit Widget(QWidget *parent = 0);
     ~Widget();
 
+    static const QStringList GEOS;
+
+private slots:
+    void on_fileOption_currentIndexChanged(int index);
+
+    void on_buttonTransform_clicked();
+
 private:
     Ui::Widget *ui;
+
+private:
+    int getFromPro();
+    int getDestPro();
+    void onePointTransform(int fromPro, int destPro);
+    void fileTransfrom(int fromPro, int destPro);
+    void buildCombox();
 };
 
 #endif // WIDGET_H
