@@ -22,6 +22,10 @@ private slots:
 
     void on_buttonTransform_clicked();
 
+    void on_buttonFileBegin_clicked();
+
+    void on_buttonFileEnd_clicked();
+
 private:
     Ui::Widget *ui;
 
@@ -31,6 +35,7 @@ private:
     void onePointTransform(int fromPro, int destPro);
     void fileTransfrom(int fromPro, int destPro);
     void buildCombox();
+    void saveToFile(const QPolygonF &poly, QString saveName);
 };
 
 #endif // WIDGET_H
