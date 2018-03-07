@@ -41,27 +41,27 @@ int minCost(vector<vector<int>>& costs)
 
 int main()
 {
-	int N,K;
-	int cost;
-	vector<vector<int> > costs;
-	string s;
-	istringstream is;
+    int N,K;
+    int cost;
+    vector<vector<int> > costs;
+    string s;
+    istringstream is;
 
-	getline(cin, s);
-	is.str(s);
-	is>>N>>K;
-	for(int i =0 ; i < N; i++)
-	{
-		vector<int> t;
-		getline(cin, s);
-		is.clear();
-		is.str(s);
-		for(int j = 0; j < K; j++) {
-			is >> cost;
-			t.push_back(cost);
-		}
-		costs.push_back(t);
-	}
-	cout<<minCost(costs)<<endl;
-	return 0;
+    getline(cin, s);
+    is.str(s);
+    is>>N>>K;
+    for(int i =0 ; i < N; i++)
+    {
+        vector<int> t;
+        getline(cin, s);
+        is.clear();
+        is.str(s);
+        for(int j = 0; j < K; j++) {
+            is >> cost;
+            t.push_back(cost);
+        }
+        costs.push_back(t);
+    }
+    cout<<minCost(costs)<<endl;
+    return 0;
 }
