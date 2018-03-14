@@ -35,23 +35,6 @@ public:
 private:
     int num[SIZE];
 };
-void multi(BigNum&left, BigNum&right, BigNum&result)
-{
-    int opt=0;
-    int *l=left.cur;
-    int *r=right.cur;
-    int lId=left.len;
-    int rId=right.len;
-    int *ret=result.cur;
-    int retId=SIZE;
-    while(lId||rId)
-    {
-        opt+= (lId?l[--lId]:1)*(rId?r[--rId]:1);
-        ret[--retId] = opt%SYSTEM;
-        opt /= SYSTEM;
-    }
-    result.updateLen(SIZE-retId);
-}
 void multi(BigNum&left, int right, BigNum&result)
 {
     int opt=0;
