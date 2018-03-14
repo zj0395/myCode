@@ -5,7 +5,7 @@ const int SIZE=100;
 class BigNum
 {
 public:
-    BigNum(){cur=num+SIZE;len=0;}
+    BigNum():num{0}{cur=num+SIZE;len=0;}
     int *cur;
     int len;
     void operator =(int n)
@@ -37,28 +37,39 @@ private:
 };
 void multi(BigNum&left, BigNum&right, BigNum&result)
 {
-    int opt=0;
-    int *l=left.cur;
-    int *r=right.cur;
     int lId=left.len;
     int rId=right.len;
-    int *ret=result.cur;
-    int retId=SIZE;
-    while(lId||rId)
+    int *l=left.cur+lId-1;
+    int *r=right.cur+rId-1;
+    int *ret=result.cur+result.len-1;
+    for(int i=0; i<lId; ++i)
     {
-        opt+= (lId?l[--lId]:1)*(rId?r[--rId]:1);
-        ret[--retId] = opt%SYSTEM;
+        for(int j=0; j<rId; ++j)
+        {
+            ret[-i-j] += l[-i]*r[-j];
+        }
+    }
+    int opt=0;
+    int retId=0;
+    int len=rId+lId+1;
+    for(; retId<len; ++retId)
+    {
+        opt += ret[-retId];
+        ret[-retId]=opt%SYSTEM;
         opt /= SYSTEM;
     }
-    result.updateLen(SIZE-retId);
+    while( ret[-retId+1]==0 )
+        --retId;
+    result.updateLen(retId);
+    cout<<retId<<"\n";
 }
 void multi(BigNum&left, int right, BigNum&result)
 {
-    int opt=0;
     int *l=left.cur;
     int lId=left.len;
     int *ret=result.cur+result.len-SIZE;
     int retId=SIZE;
+    int opt=0;
     while(lId)
     {
         opt+= l[--lId] *right;
@@ -90,21 +101,11 @@ void divide(BigNum&left, int right, BigNum&result)
             break;
     result.updateLen(lId-i);
 }
-const int LEN=103;
-int main()
+void test()
 {
-    int num;
-    BigNum big[LEN];
-    big[0]=1;
-    big[1]=1;
-    for(int i=2;i<LEN;++i)
-    {
-        multi( big[i-1], 4*i-2, big[i] );
-        divide( big[i], i+1, big[i] );
-    }
-    while( cin>>num && num!=-1 )
-    {
-        cout<<big[num]<<"\n";
-    }
-    return 0;
+    BigNum t[3];
+    t[0]=99999999;
+    t[1]=99999999;
+    multi(t[0], t[1], t[2]);
+    cout<<t[2]<<"\n";
 }
