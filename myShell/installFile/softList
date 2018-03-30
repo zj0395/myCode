@@ -1,6 +1,5 @@
 vim-gnome kdesudo gksu
 chromium-browser
-transmission
 syspeek
 git
 exfat-fuse
@@ -11,9 +10,7 @@ python-nose
 gnome-tweak-tool
 silversearcher-ag
 shellcheck
-mpv
 guake
-gimp
 valgrind
 g++-7-multilib libgl1-mesa-dev
 make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev libncursesw5-dev xz-utils tk-dev
