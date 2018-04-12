@@ -1,10 +1,11 @@
-vim-gnome kdesudo gksu
+vim-gnome
 chromium-browser
 syspeek
 git
 exfat-fuse
 unrar
-sl cmatrix
+sl
+cmatrix
 tmux
 python-nose
 gnome-tweak-tool

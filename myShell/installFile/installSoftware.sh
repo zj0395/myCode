@@ -194,19 +194,19 @@ function cnpmInstall()
 	done < $cnpmFile
 }
 
-#removeSoft
+removeSoft
 #setSoftSource
-#setHost
+setHost
 #ppaAdd
-#aptInstall
-#setPyenv
-#pipInstall
-#pipAfterInstall
+aptInstall
+setPyenv
+pipInstall
+pipAfterInstall
 #wgetInstall
-#gitInstall
-#setVim
-#setCnpm
-#cnpmInstall
+gitInstall
+setVim
+setCnpm
+cnpmInstall
 
 #搜狗输入法
 #官网下载，使用dpkg -i命令安装，再sudo apt install -f
