@@ -7,6 +7,24 @@ readonly cnpmFile="cnpmList"
 readonly installPath="$HOME/installFile"
 readonly preInstallPath="$installPath"/Pre
 readonly LoggingFile="$HOME/install.log"
+shellDir=`pwd`
+
+function getShellPath()
+{
+    dirname $0|grep "^/" >/dev/null 
+    if [ $? -eq 0 ];then 
+        shellDir=`dirname $0` 
+    else 
+        dirname $0|grep "^\." >/dev/null 
+        retval=$? 
+        if [ $retval -eq 0 ];then 
+            shellDir=`dirname $0|sed "s#^.#$shellDir#"` 
+        else 
+            shellDir=`dirname $0|sed "s#^#$shellDir/#"` 
+        fi 
+    fi 
+}
+getShellPath
 
 
 #日志信息
@@ -58,8 +76,9 @@ function wgetInstall()
 
 function ppaAdd()
 {
-	while read -r Line 
-	do
+    cd $shellDir
+    while read -r Line 
+    do
         sudo add-apt-repository "$Line" -y
     done < $ppaFile
     update
@@ -68,17 +87,18 @@ function ppaAdd()
 #用pip安装的库
 function  pipInstall()
 {
-	pip install --upgrade pip
-	while read -r Line 
-	do
-	    for soft in $Line
-	    do
-	        pip install "$soft"
-	        if [ $? ];then
-	            echo "Pip Install $soft Fail" >&2
-	        fi
-	    done
-	done < $pipFile
+    cd $shellDir
+    pip install --upgrade pip
+    while read -r Line 
+    do
+        for soft in $Line
+        do
+            pip install "$soft"
+            if [ $? -ne 0 ];then
+                echo "Pip Install $soft Fail" >&2
+            fi
+        done
+    done < $pipFile
 }
 
 function pipAfterInstall()
@@ -89,17 +109,18 @@ function pipAfterInstall()
 #用apt-get安装的软件
 function aptInstall()
 {
-	while read -r Line 
-	do
-	    for soft in $Line
-	    do
-	        sudo apt-get install "$soft" -y
-	        if [ $? ];then
-	            echo "Install $soft Fail" >&2
-	        fi
-	    done
-	done < "$aptFile"
-	update
+    cd $shellDir
+    while read -r Line 
+    do
+        for soft in $Line
+        do
+            sudo apt-get install "$soft" -y
+            if [ $? -eq 0 ];then
+                echo "Install $soft Fail" >&2
+            fi
+        done
+    done < "$aptFile"
+    update
 }
 
 function removeSoft()
@@ -177,36 +198,49 @@ function gitInstall()
 
 function setCnpm()
 {
-    npm install -g cnpm --registry=https://registry.npm.taobao.org
+    sudo npm install -g cnpm --registry=https://registry.npm.taobao.org
 }
 
 function cnpmInstall()
 {
-	while read -r Line 
-	do
-	    for soft in $Line
-	    do
+    cd $shellDir
+    while read -r Line 
+    do
+        for soft in $Line
+        do
             sudo cnpm install $soft -g
-	        if [ $? ];then
-	            echo "cnpm Install $soft Fail" >&2
-	        fi
-	    done
-	done < $cnpmFile
+            if [ $? ];then
+                echo "cnpm Install $soft Fail" >&2
+            fi
+        done
+    done < $cnpmFile
 }
 
-removeSoft
+while getopts :rawgvc opt
+do
+    case $opt in
+        r) removeSoft;;
+        a) aptInstall;;
+        w) wgetInstall;;
+        g) gitInstall;;
+        v) setVim;;
+        c) setCnpm;;
+    esac
+done
+
+#removeSoft
 #setSoftSource
-setHost
+#setHost
 #ppaAdd
-aptInstall
-setPyenv
-pipInstall
-pipAfterInstall
+#aptInstall
+#setPyenv
+#pipInstall
+#pipAfterInstall
 #wgetInstall
-gitInstall
-setVim
-setCnpm
-cnpmInstall
+#gitInstall
+#setVim
+#setCnpm
+#cnpmInstall
 
 #搜狗输入法
 #官网下载，使用dpkg -i命令安装，再sudo apt install -f
