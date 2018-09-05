@@ -9,3 +9,4 @@ LIBDIR_*
 test-*
 core
 .idea
+temp_*
