@@ -1,11 +1,13 @@
 #-*- coding: UTF-8 -*-
 __author = 'zj'
 
-import base64, os, sys, qrcode, math
+import base64, os, sys, qrcode, math, getopt
 from PIL import Image
 from pyzbar import pyzbar
 
-TEST_FILE = './file2qr.py_1.png'
+# 一个二维码最多保存2331字节，适当减少
+MAX_LENGTH = 500
+TEST_FILE = './file2qr.py'
 SPLIT_SYMBOL_FINAL = b'____'
 SPLIT_SYMBOL = b'__'
 
@@ -71,8 +73,6 @@ def decodeName(str):
 
 
 def file2QrCode(file):
-    # 一个二维码最多保存2331字节，适当减少
-    MAX_LENGTH = 1024
     f = open(file, 'rb')
     code = f.read()
     f.close()
@@ -95,27 +95,42 @@ def file2QrCode(file):
         fileList.append(onePath)
     return fileList
 
-def qr2file(img):
+def QRImg2File(img):
     im = Image.open(img)
     ret = pyzbar.decode(im)
     return ret[0].data
 
+def QRData2File(file):
+    f = open(file, 'r')
+    qrDatas = f.read()
+    fmanager = FileManager()
+    for oneResult in qrDatas.split('\n'):
+        oneResult = base64.b64decode(oneResult)
+        fmanager.addFile( *decodeName(oneResult) )
+    pass
+
 def __test__():
     fmanager = FileManager()
     for file in file2QrCode( TEST_FILE ):
-        oneResult = qr2file( file )
+        oneResult = QRImg2File(file)
         oneResult = base64.b64decode(oneResult)
         fmanager.addFile( *decodeName(oneResult) )
 
 
 if __name__ == '__main__':
-    if len(sys.argv)==1:
-        print('请附带参数')
-        exit(0)
-    file = sys.argv[1]
-    if file == 'test':
-        __test__()
-    elif file[-3:] == 'png':
-        qr2file( file )
-    else:
-        file2QrCode( file )
+
+    def GetArg():
+        if len(args) != 1:
+            print('最多接受一个参数')
+            exit(0)
+        return args[0]
+
+    opt, args = getopt.getopt(sys.argv[1:], '-edt', ['--encode', '--decode', '--test'])
+    print(opt, args)
+    for name, value in opt:
+        if name in ('-t', '--test'):
+            __test__()
+        elif name in ('-e', '--encode'):
+            file2QrCode( GetArg() )
+        elif name in ('-d', '--decode'):
+            QRImg2File( GetArg() )
