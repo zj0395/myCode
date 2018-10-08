@@ -40,6 +40,7 @@ function update()
 {
     sudo apt-get update -y
     sudo apt-get upgrade -y
+    sudo apt-get install -f
 }
 
 #从网上下载安装包再安装的软件，文件中以 1 开头表示此包将在其它包之前安装
@@ -131,16 +132,6 @@ function removeSoft()
     sudo apt autoremove -y
 }
 
-function setSoftSource()
-{
-    #把源设置为清华大学源
-    cd sources && sudo ./setSource.sh
-    sudo apt-get update -y
-    sudo apt-get upgrade -y
-    sudo apt-get dist-upgrade -y
-    sudo apt autoremove -y
-}
-
 function setVim()
 {
     #安装vim配置文件
@@ -150,20 +141,20 @@ function setVim()
 function setPyenv()
 {
     #1.pyenv，python环境管理
-    git clone https://github.com/pyenv/pyenv.git ~/.pyenv
+    rm ~/.pyenv -rf && git clone https://github.com/pyenv/pyenv.git ~/.pyenv
     echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bashrc
     echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc
     echo -e 'if command -v pyenv 1>/dev/null 2>&1; then\n  eval "$(pyenv init -)"\nfi' >> ~/.bashrc
     #2.安装python3.5
     source ~/.bashrc
-    pyenv install 3.5.0
+    pyenv install 3.6.6
     #pip设为清华大学源
     mkdir ~/.pip
     echo "[global]
 index-url = https://pypi.tuna.tsinghua.edu.cn/simple
 [install]
 trusted-host = https://pypi.tuna.tsinghua.edu.cn/simple" > ~/.pip/pip.conf
-    pyenv global 3.5.0
+    pyenv global 3.6.6
 }
 
 function setHost()
@@ -229,7 +220,6 @@ do
 done
 
 #removeSoft
-#setSoftSource
 #setHost
 #ppaAdd
 #aptInstall
