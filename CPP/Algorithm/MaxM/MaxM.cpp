@@ -40,7 +40,7 @@ void MaxM(int* a , int m,int b, int e)
     int i=b,j=e;
     while ( i !=j  )
     {
-       while( j > i && a[j]>=k ) 
+       while( j > i && a[j]>=k )
             --j;
         swap( a[i],a[j] );
         while( i<j && a[i]<=k )
