@@ -4,6 +4,8 @@ myPython/django
 build-*
 *.pyc
 __pycache__
+*.o
+*.d
 a.out
 LIBDIR_*
 test-*

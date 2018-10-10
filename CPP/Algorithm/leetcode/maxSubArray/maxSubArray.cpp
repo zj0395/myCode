@@ -21,7 +21,7 @@ int *maxSubArray( int* array, int length)
     int tmpBeginIndex = 0;
     for( int i=1; i<length; ++i )
     {
-        if( boundry+array[i] >= array[i] ) 
+        if( boundry+array[i] >= array[i] )
         {
             boundry += array[i];
         }
@@ -32,7 +32,7 @@ int *maxSubArray( int* array, int length)
         }
         if( maxArray < boundry )
         {
-            maxArray = boundry; 
+            maxArray = boundry;
             maxEndIndex = i;
             maxBeginIndex = tmpBeginIndex;
         }
