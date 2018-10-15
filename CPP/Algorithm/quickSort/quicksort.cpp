@@ -25,23 +25,23 @@ void QuickSort(int*a , int b ,int e)
     {
         while( j > i && a[j]>=k )
             --j;
-        swap( a[i],a[j] );
         while ( i < j&& a[i]<=k )
             ++i;
         swap(a[i],a[j]);
     }
+    swap( a[i],a[b] );
     QuickSort(a , b ,i-1);
     QuickSort(a , i+1 , e);
 }
 int main()
 {
-    const int N=8;
+    const int N=100;
     default_random_engine e(time(0));
     vector<int>a;
     a.resize(N);
     for( int i=0; i< N ;++i )
     {
-        a[i]=e();
+        a[i]=e()%400;
     }
     vector<int>r;
     r.resize(N);
@@ -51,15 +51,8 @@ int main()
     cout << time(0)<<endl;
     cout<<"Sort Ok!"<<endl;
 
-    uniform_int_distribution<unsigned> u(0,N);
-    set<int> si;
-    for( int i=0 ; i < 8 ; ++i )
-    {
-        si.insert(  i);
-    }
-    set<int>::iterator it;
-    for( it=si.begin() ; it!=si.end() ; ++it )
-        cout<<a[*it]<<" ";
+    for( auto it=a.begin() ; it!=a.end() ; ++it )
+        cout<<*it<<" ";
     cout<<endl;
     return 0;
 }
