@@ -12,56 +12,53 @@
 using namespace std;
 void Merge(int*sou ,int *tmp ,int b ,int e1 ,int e)
 {
-    int pb=b;
-    int b1=b , b2=e1;
-    while( b1<e1 && b2<e)
+    int b1=b, b2=e1+1;
+    for( int i=b; i<=e; ++i )
+        tmp[i] = sou[i];
+    for( int i=b; i<=e; ++i )
     {
-        tmp[pb++] = sou[b1] > sou[b2] ? sou[b1++] : sou[b2++];
+        if( b1 > e1 )
+            sou[i] = tmp[b2++];
+        else if( b2 > e )
+            sou[i] = tmp[b1++];
+        else if( tmp[b1] <= tmp[b2] )
+            sou[i] = tmp[b1++];
+        else
+            sou[i] = tmp[b2++];
     }
-    while( b1 < e1 )
-        tmp[pb++] = sou[b1++];
-    while( b2 < e )
-        tmp[pb++] = sou[b2++];
-    for(  ; b<e ; ++b )
-        sou[b] = tmp[b];
 }
 void MergeSort(int* sou , int *tmp , int b , int e)
 {
-    if( b < e-1 )
+    if( b < e )
     {
         int e1 = b + (e-b)/2;
-        MergeSort(sou ,tmp , b ,e1);
-        MergeSort(sou ,tmp , e1 ,e);
-        Merge(sou , tmp , b , e1 ,e);
+        MergeSort(sou, tmp, b, e1);
+        MergeSort(sou, tmp, e1+1, e);
+        Merge(sou, tmp, b, e1, e);
     }
 }
 int main()
 {
-    const int N=100000000;
+    const int N=50, MOD=100;
     default_random_engine e;
     vector<int>a;
     a.resize(N);
     for( int i=0; i< N ;++i )
     {
-        a[i]=e();
+        a[i]=e()%MOD;
     }
     vector<int>r;
     r.resize(N);
-    cout<<"begin sort"<<endl;
-    cout << time(0)<<endl;
-    MergeSort(&a[0],&r[0] , 0 ,N);
-    cout << time(0)<<endl;
-    cout<<"Sort Ok!"<<endl;
+    MergeSort(&a[0],&r[0] , 0 ,N-1);
 
-    uniform_int_distribution<unsigned> u(0,N);
-    set<int> si;
-    for( int i=0 ; i < 100 ; ++i )
+    int last = a[0];
+    bool flag = true;
+    for( int i=1; i<N; ++i )
     {
-        si.insert(  u(e) );
+        if( a[i] < last )
+            flag = false;
+        last = a[i];
     }
-    set<int>::iterator it;
-    for( it=si.begin() ; it!=si.end() ; ++it )
-        cout<<a[*it]<<" ";
-    cout<<endl;
+    cout<<(flag ? "Ok\n":"Fail\n");
     return 0;
 }
