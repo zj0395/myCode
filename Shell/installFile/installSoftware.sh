@@ -207,6 +207,21 @@ function cnpmInstall()
     done < $cnpmFile
 }
 
+function getConfig()
+{
+    cloneDir=~/workspace/myCode
+    git clone git@github.com:zj0395/myCode.git $cloneDir
+    cd $cloneDir/Configs
+    if [ $? = 0 ];then
+        for configFile in *.local
+        do
+            dstFile=.$configFile
+            cp "$configFile" ~/"$dstFile"
+        done
+    fi
+    echo "source ~/.bashrc.local" >> ~/.bashrc
+}
+
 while getopts :rawgvc opt
 do
     case $opt in
@@ -231,6 +246,7 @@ done
 #setVim
 #setCnpm
 #cnpmInstall
+#getConfig
 
 #搜狗输入法
 #官网下载，使用dpkg -i命令安装，再sudo apt install -f
