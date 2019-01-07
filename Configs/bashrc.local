@@ -1,0 +1,2 @@
+alias zjplay="play -t raw -r 16k -e signed -b 16 -c 1"
+alias gip='git push origin HEAD:refs/for/`git symbolic-ref --short -q HEAD`'
