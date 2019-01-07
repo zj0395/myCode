@@ -7,6 +7,7 @@ readonly cnpmFile="cnpmList"
 readonly installPath="$HOME/installFile"
 readonly preInstallPath="$installPath"/Pre
 readonly LoggingFile="$HOME/install.log"
+readonly workspaceDir="$HOME/workspace"
 shellDir=`pwd`
 
 function getShellPath()
@@ -194,12 +195,12 @@ function setCnpm()
 
 function cnpmInstall()
 {
-    cd $shellDir
+    cd "$shellDir"
     while read -r Line 
     do
         for soft in $Line
         do
-            sudo cnpm install $soft -g
+            sudo cnpm install "$soft" -g
             if [ $? ];then
                 echo "cnpm Install $soft Fail" >&2
             fi
@@ -209,17 +210,9 @@ function cnpmInstall()
 
 function getConfig()
 {
-    cloneDir=~/workspace/myCode
-    git clone git@github.com:zj0395/myCode.git $cloneDir
-    cd $cloneDir/Configs
-    if [ $? = 0 ];then
-        for configFile in *.local
-        do
-            dstFile=.$configFile
-            cp "$configFile" ~/"$dstFile"
-        done
-    fi
-    echo "source ~/.bashrc.local" >> ~/.bashrc
+    cloneDir=$workspaceDir/myCode
+    git clone git@github.com:zj0395/myCode.git "$cloneDir"
+    "$cloneDir"/Configs/install.sh
 }
 
 while getopts :rawgvc opt
