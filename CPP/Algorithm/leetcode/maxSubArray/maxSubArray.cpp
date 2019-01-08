@@ -52,9 +52,11 @@ int main()
     int num = sizeof(a)/sizeof(a[0]);
     int* result = maxSubArray(a, num);
     cout<<"Begin:"<<result[0]<<"  End:"<<result[1]<<"  Num:"<<result[2]<<endl;
+    delete []result;
     int b[] = {3,-1,5,-1,9,-20,21,-20,20,21};
     num = sizeof(b)/sizeof(b[0]);
     result = maxSubArray(b, num);
     cout<<"Begin:"<<result[0]<<"  End:"<<result[1]<<"  Num:"<<result[2]<<endl;
+    delete []result;
     return 0;
 }

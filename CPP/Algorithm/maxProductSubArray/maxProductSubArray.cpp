@@ -55,6 +55,7 @@ int maxSubArray( int* array, int length)
     {
         result = getMax( array, length, length );
     }
+    delete []indexS;
     return result;
 }
 

@@ -36,6 +36,7 @@ int main()
     int* result = binaryAdd(a, b, num);
     for( int i=0; i<num+1; ++i )
         cout<<result[i];
+    delete []result;
     cout<<endl;
     return 0;
 }

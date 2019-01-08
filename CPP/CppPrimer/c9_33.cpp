@@ -1,7 +1,7 @@
 /*************************************************************************
 	> File Name: c9_33.cpp
-	> Author: 
-	> Mail: 
+	> Author:
+	> Mail:
 	> Created Time: 2017年03月18日 星期六 16时18分26秒
  ************************************************************************/
 
@@ -17,9 +17,9 @@ int main()
 //    while(beg!=s.end())
     {
         ++beg;
-        s.insert(beg,43);
+        beg = s.insert(beg,43);
         ++beg;
-        beg=s.insert(beg,55);
+        beg = beg=s.insert(beg,55);
     }
     for(int a:s)
         cout<<a<<" ";

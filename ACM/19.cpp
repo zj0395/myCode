@@ -51,6 +51,12 @@ public:
                 }
             }
         }
-        return dp[m][n];
+        bool result = dp[m][n];
+        for(int i=0; i<=m; ++i)
+        {
+            delete []dp[i];
+        }
+        delete []dp;
+        return result;
     }
 };
