@@ -49,6 +49,7 @@ function wgetInstall() {
     fi
     while read -r Line
     do
+        if [[ $Line == \#* ]]; then continue; fi
         next=false
         Path="$installPath"
         url="$Line"
@@ -77,6 +78,7 @@ function ppaAdd() {
     cd $shellDir
     while read -r Line 
     do
+        if [[ $Line == \#* ]]; then continue; fi
         sudo add-apt-repository "$Line" -y
     done < $ppaFile
     update
@@ -88,6 +90,7 @@ function  pipInstall() {
     pip install --upgrade pip
     while read -r Line 
     do
+        if [[ $Line == \#* ]]; then continue; fi
         for soft in $Line
         do
             pip install "$soft"
@@ -107,6 +110,7 @@ function aptInstall() {
     cd $shellDir
     while read -r Line 
     do
+        if [[ $Line == \#* ]]; then continue; fi
         for soft in $Line
         do
             sudo apt-get install "$soft" -y
@@ -184,6 +188,7 @@ function cnpmInstall() {
     cd "$shellDir"
     while read -r Line 
     do
+        if [[ $Line == \#* ]]; then continue; fi
         for soft in $Line
         do
             sudo cnpm install "$soft" -g
