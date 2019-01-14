@@ -10,8 +10,7 @@ readonly LoggingFile="$HOME/install.log"
 readonly workspaceDir="$HOME/workspace"
 shellDir=`pwd`
 
-function getShellPath()
-{
+function getShellPath() {
     dirname $0|grep "^/" >/dev/null 
     if [ $? -eq 0 ];then 
         shellDir=`dirname $0` 
@@ -37,16 +36,14 @@ if [[ ! -d $installPath ]];then
     mkdir "$installPath"
 fi
 
-function update()
-{
+function update() {
     sudo apt-get update -y
     sudo apt-get upgrade -y
     sudo apt-get install -f
 }
 
 #从网上下载安装包再安装的软件，文件中以 1 开头表示此包将在其它包之前安装
-function wgetInstall()
-{
+function wgetInstall() {
     if [ -n "$installPath" ];then
         rm "$installPath"/*.deb
     fi
@@ -76,8 +73,7 @@ function wgetInstall()
     update
 }
 
-function ppaAdd()
-{
+function ppaAdd() {
     cd $shellDir
     while read -r Line 
     do
@@ -87,8 +83,7 @@ function ppaAdd()
 }
 
 #用pip安装的库
-function  pipInstall()
-{
+function  pipInstall() {
     cd $shellDir
     pip install --upgrade pip
     while read -r Line 
@@ -103,14 +98,12 @@ function  pipInstall()
     done < $pipFile
 }
 
-function pipAfterInstall()
-{
+function pipAfterInstall() {
     echo "source `which activate.sh`" >> ~/.bashrc
 }
 
 #用apt-get安装的软件
-function aptInstall()
-{
+function aptInstall() {
     cd $shellDir
     while read -r Line 
     do
@@ -125,22 +118,19 @@ function aptInstall()
     update
 }
 
-function removeSoft()
-{
+function removeSoft() {
     sudo apt-get remove libreoffice-common thunderbird totem \
         rhythmbox simple-scan aisleriot cheese transmission-common\
         gnome-orca deja-dup -y
     sudo apt autoremove -y
 }
 
-function setVim()
-{
+function setVim() {
     #安装vim配置文件
     curl https://j.mp/spf13-vim3 -L > spf13-vim.sh && sh spf13-vim.sh
 }
 
-function setPyenv()
-{
+function setPyenv() {
     #1.pyenv，python环境管理
     rm ~/.pyenv -rf && git clone https://github.com/pyenv/pyenv.git ~/.pyenv
     echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bashrc
@@ -158,15 +148,13 @@ trusted-host = https://pypi.tuna.tsinghua.edu.cn/simple" > ~/.pip/pip.conf
     pyenv global 3.6.6
 }
 
-function setHost()
-{
+function setHost() {
     #更新ipv6 host
     wget https://raw.githubusercontent.com/lennylxx/ipv6-hosts/master/hosts -P "$installPath"/ &&\
         cd $installPath/ && sudo cp hosts /etc/hosts && rm hosts
 }
 
-function gitInstall()
-{
+function gitInstall() {
     #安装autojump
     rm -rf "$installPath"/autojump && git clone git://github.com/joelthelion/autojump.git "$installPath"/autojump && cd "$installPath"/autojump && ./install.py
     echo '[[ -s /home/zj/.autojump/etc/profile.d/autojump.sh ]] && source /home/zj/.autojump/etc/profile.d/autojump.sh' >> $HOME/.bashrc
@@ -188,13 +176,11 @@ function gitInstall()
         echo "run-shell ~/.tmux/tmux-resurrect/resurrect.tmux" >> ~/.tmux.conf
 }
 
-function setCnpm()
-{
+function setCnpm() {
     sudo npm install -g cnpm --registry=https://registry.npm.taobao.org
 }
 
-function cnpmInstall()
-{
+function cnpmInstall() {
     cd "$shellDir"
     while read -r Line 
     do
@@ -208,8 +194,7 @@ function cnpmInstall()
     done < $cnpmFile
 }
 
-function getConfig()
-{
+function getConfig() {
     cloneDir=$workspaceDir/myCode
     git clone git@github.com:zj0395/myCode.git "$cloneDir"
     "$cloneDir"/Configs/install.sh
