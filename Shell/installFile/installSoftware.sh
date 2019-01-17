@@ -142,14 +142,14 @@ function setPyenv() {
     echo -e 'if command -v pyenv 1>/dev/null 2>&1; then\n  eval "$(pyenv init -)"\nfi' >> ~/.bashrc
     #2.安装python3.5
     source ~/.bashrc
-    pyenv install 3.6.6
+    ~/.pyenv/bin/pyenv install 3.6.6
     #pip设为清华大学源
     mkdir ~/.pip
     echo "[global]
 index-url = https://pypi.tuna.tsinghua.edu.cn/simple
 [install]
 trusted-host = https://pypi.tuna.tsinghua.edu.cn/simple" > ~/.pip/pip.conf
-    pyenv global 3.6.6
+    ~/.pyenv/bin/pyenv global 3.6.6
 }
 
 function setHost() {
