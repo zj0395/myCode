@@ -26,23 +26,22 @@ func SetTitle()
 		call append(line("."), "	> File Name: ".expand("%"))
 		call append(line(".")+1, "	> Author: zj")
 		call append(line(".")+2, "	> Describe: ")
-		call append(line(".")+3, "	> Created Time: ".strftime("%c"))
-		call append(line(".")+4, " ************************************************************************/")
-		call append(line(".")+5, "")
+		call append(line(".")+3, " ************************************************************************/")
+		call append(line(".")+4, "")
 	endif
 	if expand("%:e") == 'cpp'
-		call append(line(".")+6, "#include <iostream>")
-		call append(line(".")+7, "using namespace std;")
-		call append(line(".")+8, "")
-	endif
-	if &filetype == 'c'
-		call append(line(".")+6, "#include <stdio.h>")
+		call append(line(".")+5, "#include <iostream>")
+		call append(line(".")+6, "using namespace std;")
 		call append(line(".")+7, "")
 	endif
+	if &filetype == 'c'
+		call append(line(".")+5, "#include <stdio.h>")
+		call append(line(".")+6, "")
+	endif
 	if expand("%:e") == 'h'
-		call append(line(".")+6, "#ifndef _".toupper(expand("%:r"))."_H")
-		call append(line(".")+7, "#define _".toupper(expand("%:r"))."_H")
-		call append(line(".")+8, "#endif")
+		call append(line(".")+5, "#ifndef ".toupper(expand("%:r"))."_H")
+		call append(line(".")+6, "#define ".toupper(expand("%:r"))."_H")
+		call append(line(".")+7, "#endif")
 	endif
 	if &filetype == 'java'
 		call append(line(".")+7,"public class ".expand("%:r"))
